@@ -176,18 +176,16 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
 
       {/* 하단 고정 영역 - 마진 조정 */}
       <div className="py-4 bg-white mt-auto mb-4">
-        <div className="mt-8">
-          <Button
-            type="submit"
-            size="lg"
-            fullWidth
-            disabled={!isFormValid}
-            onClick={onSubmit}
-            isLoading={isLoading}
-          >
-            호출하기
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          size="lg"
+          fullWidth
+          disabled={!isFormValid}
+          onClick={onSubmit}
+          isLoading={isLoading}
+        >
+          호출하기
+        </Button>
       </div>
     </div>
   );
