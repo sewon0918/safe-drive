@@ -10,8 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stackflow/core": "^1.2.0",
+    "@stackflow/plugin-basic-ui": "^1.14.0",
+    "@stackflow/plugin-renderer-basic": "^1.1.13",
+    "@stackflow/react": "^1.5.1",
+    "@tailwindcss/vite": "^4.1.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-daum-postcode": "^3.2.0",
+    "react-dom": "^19.0.0",
+    "react-kakao-maps-sdk": "^1.1.27",
+    "tailwindcss": "^4.1.4",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
