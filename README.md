@@ -1,54 +1,89 @@
-# React + TypeScript + Vite
+# 여성 안심 대리운전 서비스
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 프로젝트 소개
 
-Currently, two official plugins are available:
+이 프로젝트는 여성 고객과 여성 기사님이 안심하고 이용할 수 있는 대리운전 서비스 프로토타입입니다. 기존 대리운전 서비스의 안전 문제를 해결하고, 특히 여성 이용자와 기사님들의 불안감을 줄이기 위해 '상호 선택 시스템'에 기반한 기능을 구현했습니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 기획 배경 및 문제 인식
 
-## Expanding the ESLint configuration
+대리운전 서비스는 편리하지만 여성 이용자와 여성 기사님들에게는 여러 안전 문제가 존재합니다:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **신원 확인의 어려움**: 기존 서비스에서는 기사와 고객의 기본 정보만 제공되어 신뢰도 판단이 어려움
+2. **안전에 대한 불안감**: 낯선 사람과의 탑승/운행 과정에서 발생하는 불안감
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### 관련 기사 및 이슈
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+여성 안심 대리운전 서비스의 필요성은 최근 다양한 언론 보도를 통해서도 확인할 수 있습니다:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- [대리운전 기사에 의한 성범죄 및 여성기사 전용 매칭 시스템 요구 증가](https://www.kbmaeil.com/1035808)
+- [여성 대리운전기사가 겪는 현실을 담은 다큐멘터리 '밤의 유령'](https://www.busan.com/view/busan/view.php?code=2024030413452600625)
+- [대리운전 범죄 관련 이슈와 제도적 개선 필요성](https://www.joongang.co.kr/article/25321741)
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 해결 방안
+
+### 1. 성별 맞춤형 매칭 시스템
+
+- **여성 기사님 전용 매칭**: 여성 이용자가 원할 경우 여성 기사님만 매칭되는 옵션 제공
+
+### 2. 투명한 정보 공유
+
+- **상호 선택 시스템**: 기사와 고객이 서로의 프로필과 평점을 확인하고 매칭을 수락/거절할 수 있는 기능
+
+### 3. 안전 강화
+
+- **위치 공유**: 운행 중 지인에게 실시간 위치 공유 가능
+- **긴급 신고**: 위급 상황 시 긴급 연락처로 자동 알림 발송 기능(현재는 alert창)
+
+### 4. 안심도 평가
+
+- **여성 안심도 평가**: 일반적인 리뷰뿐아니라 여성 이용자를 위한 특화된 안심도 평가 지표 추가
+
+## 주요 기능 및 사용자 흐름
+
+### 승객(User) 흐름
+
+1. **목적지 입력 & 옵션 설정**
+
+   - 출발지/목적지 설정
+   - 여성 기사님 전용 매칭 옵션 선택
+   - 보호 모드(위치 공유) 활성화 여부 선택
+
+2. **기사님 매칭 과정**
+
+   - 기사님 매칭 시 상세 정보 확인 가능
+   - 기사님 프로필, 평점, 리뷰 확인 후 수락/거절 선택 가능
+
+3. **운행 과정**
+
+   - 지인에게 위치 공유 기능
+   - 긴급 상황 시 신고 버튼
+
+4. **운행 완료 및 평가**
+
+   - 운행 시작 10초 후 운행 완료 처리
+   - 운행 종료 후 기사님 평가
+   - 여성 안심도 별도 평가
+
+### 기사님(Driver) 흐름
+
+1. **대기 및 콜 확인**
+
+   - 대기 중인 콜 리스트 확인
+   - 고객 정보(성별, 평점, 출발지, 목적지, 예상 요금) 확인
+
+2. **고객 정보 검토 및 콜 수락**
+
+   - 고객 상세 정보 및 이전 평가 확인
+   - 콜 수락 또는 거절 선택
+
+3. **운행 완료 및 평가**
+   - 운행 종료 후 고객 평가
+
+## 특이사항
+
+- 브라우저 모바일뷰 IPhone 14 Pro Max 옵션으로 테스트하는 것을 추천드립니다.
+- 모바일 뷰의 승객 > 목적지 검색 화면에서 주소를 선택할 때 주소의 살짝 아래쪽을 선택해야 선택되는 이슈가 있습니다. 데스크탑뷰에서 width를 줄인 후 주소를 선택하면 정상적으로 선택됩니다.
+
+## 데모
+
+Live Demo: [https://safe-drive-nine.vercel.app/](https://safe-drive-nine.vercel.app/)

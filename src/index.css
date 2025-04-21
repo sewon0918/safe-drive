@@ -55,3 +55,23 @@ h1 {
     color: #747bff;
   }
 }
+
+@media screen and (max-width: 375px) {
+  html {
+    font-size: 14px; /* iPhone SE를 위한 더 작은 기본 글꼴 크기 */
+  }
+
+  /* 필요에 따라 특정 요소들의 폰트 크기 조정 */
+  .text-lg {
+    font-size: 1rem !important;
+  }
+
+  .text-xl {
+    font-size: 1.1rem !important;
+  }
+
+  /* 버튼 텍스트 크기 조정 */
+  button {
+    font-size: 0.9rem !important;
+  }
+}

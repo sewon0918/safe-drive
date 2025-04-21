@@ -14,7 +14,7 @@ interface DriverTripCompletedParams {
 
 export const DriverTripCompletedActivity: React.FC<
   ActivityComponentProps<DriverTripCompletedParams>
-> = ({ params }) => {
+> = () => {
   const { pop } = useFlow();
   const [rating, setRating] = useState<number>(0);
   const resetMatch = useMatchCallStore((state) => state.resetMatch);
@@ -38,26 +38,8 @@ export const DriverTripCompletedActivity: React.FC<
     <AppScreen appBar={{ title: "운행 완료" }}>
       <div className="flex flex-col h-full bg-white">
         {/* 요약 정보 */}
-        <div className="bg-blue-500 px-6 pt-8 pb-6 text-white">
-          <h2 className="text-2xl font-bold mb-4">운행이 완료되었습니다</h2>
-
-          <div className="bg-white rounded-lg shadow-md p-4 text-black mb-4">
-            <div className="flex justify-between items-center">
-              <div className="text-gray-500 text-sm">운행 요금</div>
-              <div className="text-xl font-bold">{params.fare}</div>
-            </div>
-            <div className="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center">
-              <div className="text-gray-500 text-sm">정산 예정 금액</div>
-              <div className="text-lg font-semibold text-blue-500">
-                {
-                  params.fare.replace(
-                    "₩",
-                    "₩"
-                  ) /* 실제로는 수수료를 차감한 금액 */
-                }
-              </div>
-            </div>
-          </div>
+        <div className="bg-blue-500 px-6 py-8 text-white">
+          <h2 className="text-2xl font-bold ">운행이 완료되었습니다</h2>
         </div>
 
         {/* 승객 평가 */}

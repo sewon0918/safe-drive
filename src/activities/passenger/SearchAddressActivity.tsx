@@ -96,13 +96,11 @@ export const SearchAddressActivity: React.FC<
         )}
 
         {/* Daum 우편번호 검색 컴포넌트 */}
-        <div className="flex-1">
-          <DaumPostcodeEmbed
-            onComplete={handleComplete}
-            style={{ width: "100%", height: "100%" }}
-            autoClose={false}
-          />
-        </div>
+        <DaumPostcodeEmbed
+          onComplete={handleComplete}
+          style={{ width: "100%", height: "100%" }}
+          autoClose={false}
+        />
       </div>
     </AppScreen>
   );
