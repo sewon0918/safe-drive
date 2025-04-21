@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Location, TripRequest } from "../types";
+import { TripRequest } from "../types";
 
 interface TripState {
   destination: string;
@@ -15,7 +15,7 @@ interface TripState {
 }
 
 // 간단한 트립 스토어 구현
-export const useTripStore = create<TripState>((set, get) => ({
+export const useTripStore = create<TripState>((set) => ({
   // 목적지
   destination: "",
   setDestination: (destination) => set({ destination }),

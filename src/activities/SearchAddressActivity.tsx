@@ -11,7 +11,7 @@ interface SearchAddressParams {
 
 // 카카오 지오코딩 API를 사용한 좌표 변환 함수
 const getCoordinates = (address: string) => {
-  return new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+  return new Promise<{ lat: number; lng: number }>((resolve) => {
     // 카카오 지도 API가 로드되었는지 확인
     if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
       console.error("카카오 지도 API가 로드되지 않았습니다.");
@@ -44,8 +44,7 @@ const getCoordinates = (address: string) => {
 
 export const SearchAddressActivity: React.FC<
   ActivityComponentProps<SearchAddressParams>
-> = ({ params }) => {
-  const { searchType } = params;
+> = () => {
   const { pop } = useFlow();
   const { setDestination, setDestinationCoords } = useTripStore();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -81,7 +80,6 @@ export const SearchAddressActivity: React.FC<
       pop();
     } catch (error) {
       console.error("좌표 변환 중 오류 발생:", error);
-      alert("주소 좌표 변환에 실패했습니다. 다시 시도해주세요.");
       setIsProcessing(false);
     }
   };

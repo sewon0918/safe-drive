@@ -11,7 +11,6 @@ interface CallFormProps {
 const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
   const {
     destination,
-    setDestination,
     femaleDriverOnly,
     toggleFemaleDriverOnly,
     protectionMode,
@@ -28,11 +27,6 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
     vip: "2.5만원",
     best: "2.4만원",
     standard: "2만원",
-  };
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    onSubmit();
   };
 
   const isFormValid = true; // Implement form validation logic

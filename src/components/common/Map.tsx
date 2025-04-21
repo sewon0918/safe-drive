@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Map as KakaoMap, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 interface MapProps {
@@ -21,13 +21,17 @@ const Map: React.FC<MapProps> = ({
   initialCenter,
   markers = [],
   path,
-  zoom = 15,
+  zoom = 7,
   className,
 }) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const kakaoMapRef = useRef<any>(null);
+  const mapRef = useRef<kakao.maps.Map>(null);
 
-  // 초기 중심 좌표 (서울)
+  const [bounds, setBounds] = useState<
+    | { sw: { lat: number; lng: number }; ne: { lat: number; lng: number } }
+    | undefined
+  >(undefined);
+
+  // 기본 중심 좌표 (서울)
   const defaultCenter = { lat: 37.5665, lng: 126.978 };
 
   // 유효한 좌표인지 확인하는 함수
@@ -42,118 +46,154 @@ const Map: React.FC<MapProps> = ({
     );
   };
 
-  // 지도 초기화
-  useEffect(() => {
-    if (!window.kakao || !mapRef.current) return;
+  // 경로 좌표 생성
+  const pathCoordinates = React.useMemo(() => {
+    if (!path) return [];
 
-    // 유효한 중심 좌표 확보
-    const center = isValidCoord(initialCenter) ? initialCenter : defaultCenter;
-
-    const options = {
-      center: new window.kakao.maps.LatLng(center.lat, center.lng),
-      level: zoom,
-    };
-
-    const map = new window.kakao.maps.Map(mapRef.current, options);
-    kakaoMapRef.current = map;
-
-    return () => {
-      kakaoMapRef.current = null;
-    };
-  }, [initialCenter, zoom]);
-
-  // 마커 추가
-  useEffect(() => {
-    if (!kakaoMapRef.current || !markers || markers.length === 0) return;
-
-    const map = kakaoMapRef.current;
-    const bounds = new window.kakao.maps.LatLngBounds();
-    const createdMarkers: any[] = [];
-
-    markers.forEach((markerInfo) => {
-      // 마커 위치가 유효한지 확인
-      if (!isValidCoord(markerInfo.position)) {
-        console.warn("Invalid marker position:", markerInfo);
-        return;
-      }
-
-      const position = new window.kakao.maps.LatLng(
-        markerInfo.position.lat,
-        markerInfo.position.lng
-      );
-
-      const marker = new window.kakao.maps.Marker({
-        position,
-        map,
-        title: markerInfo.title,
-      });
-
-      bounds.extend(position);
-      createdMarkers.push(marker);
-    });
-
-    // 지도 범위 재설정 (마커가 2개 이상일 때만)
-    if (createdMarkers.length >= 2) {
-      try {
-        map.setBounds(bounds);
-      } catch (error) {
-        console.error("지도 범위 재설정 중 오류:", error);
-      }
-    } else if (createdMarkers.length === 1) {
-      // 마커가 하나만 있을 경우 해당 위치로 중심 이동
-      map.setCenter(createdMarkers[0].getPosition());
+    // 유효성 검사
+    if (!isValidCoord(path.origin) || !isValidCoord(path.destination)) {
+      return [];
     }
 
-    return () => {
-      createdMarkers.forEach((marker) => marker.setMap(null));
-    };
+    // 경로 좌표 생성
+    const coordinates = [
+      { lat: path.origin.lat, lng: path.origin.lng },
+      ...(path.waypoints?.filter(isValidCoord) || []),
+      { lat: path.destination.lat, lng: path.destination.lng },
+    ];
+
+    return coordinates;
+  }, [path]);
+
+  // 유효한 마커만 필터링
+  const validMarkers = React.useMemo(() => {
+    return markers.filter((marker) => isValidCoord(marker.position));
   }, [markers]);
 
-  // 경로 그리기
+  // 지도 bounds 계산
   useEffect(() => {
-    if (!kakaoMapRef.current || !path) return;
-
-    // path.origin과 path.destination이 유효한지 확인
-    if (!isValidCoord(path.origin) || !isValidCoord(path.destination)) {
-      console.warn("Invalid path coordinates:", path);
+    // 마커나 경로가 없으면 bounds 계산 안함
+    if ((validMarkers.length === 0 && !path) || !path) {
+      setBounds(undefined);
       return;
     }
 
-    const map = kakaoMapRef.current;
-    const polyline = new window.kakao.maps.Polyline({
-      path: [
-        new window.kakao.maps.LatLng(path.origin.lat, path.origin.lng),
-        ...(path.waypoints
-          ?.filter(isValidCoord)
-          .map((wp) => new window.kakao.maps.LatLng(wp.lat, wp.lng)) || []),
-        new window.kakao.maps.LatLng(
-          path.destination.lat,
-          path.destination.lng
-        ),
-      ],
-      strokeWeight: 5,
-      strokeColor: "#5B8DDE",
-      strokeOpacity: 0.7,
-      strokeStyle: "solid",
+    // 모든 좌표 수집
+    let allCoordinates: { lat: number; lng: number }[] = [];
+
+    // 마커 좌표 추가
+    validMarkers.forEach((marker) => {
+      allCoordinates.push(marker.position);
     });
 
-    polyline.setMap(map);
+    // 경로 좌표 추가
+    if (path && isValidCoord(path.origin) && isValidCoord(path.destination)) {
+      allCoordinates.push(path.origin);
+      allCoordinates.push(path.destination);
 
-    return () => {
-      polyline.setMap(null);
-    };
-  }, [path]);
+      // 경유지 추가
+      if (path.waypoints) {
+        path.waypoints.filter(isValidCoord).forEach((waypoint) => {
+          allCoordinates.push(waypoint);
+        });
+      }
+    }
+
+    // 좌표가 2개 미만이면 bounds 계산 안함
+    if (allCoordinates.length < 2) {
+      setBounds(undefined);
+      return;
+    }
+
+    // 최대/최소 위도/경도 계산
+    let minLat = allCoordinates[0].lat;
+    let maxLat = allCoordinates[0].lat;
+    let minLng = allCoordinates[0].lng;
+    let maxLng = allCoordinates[0].lng;
+
+    allCoordinates.forEach((coord) => {
+      minLat = Math.min(minLat, coord.lat);
+      maxLat = Math.max(maxLat, coord.lat);
+      minLng = Math.min(minLng, coord.lng);
+      maxLng = Math.max(maxLng, coord.lng);
+    });
+
+    // 패딩 추가 (화면에 적절히 표시하기 위함)
+    const latPadding = (maxLat - minLat) * 0.1;
+    const lngPadding = (maxLng - minLng) * 0.1;
+
+    setBounds({
+      sw: { lat: minLat - latPadding, lng: minLng - lngPadding },
+      ne: { lat: maxLat + latPadding, lng: maxLng + lngPadding },
+    });
+  }, [validMarkers, path]);
+
+  // 지도 bounds 설정 - 지도가 로드된 후 실행
+  useEffect(() => {
+    if (!mapRef.current || !bounds) return;
+
+    // kakao 지도 API를 사용하여 bounds 설정
+    try {
+      const map = mapRef.current;
+      const kakaoBounds = new kakao.maps.LatLngBounds(
+        new kakao.maps.LatLng(bounds.sw.lat, bounds.sw.lng),
+        new kakao.maps.LatLng(bounds.ne.lat, bounds.ne.lng)
+      );
+
+      map.setBounds(kakaoBounds);
+    } catch (error) {
+      console.error("지도 범위 설정 오류:", error);
+    }
+  }, [bounds, mapRef.current]);
+
+  // 유효한 중심 좌표 가져오기
+  const center = isValidCoord(initialCenter) ? initialCenter : defaultCenter;
 
   return (
-    <div
-      ref={mapRef}
-      className={`w-full h-full ${className || ""}`}
-      style={{ minHeight: "200px" }}
-    >
-      {/* 지도를 불러오는 동안 표시할 내용 */}
-      <div className="flex items-center justify-center h-full bg-gray-100">
-        <span className="text-gray-500">지도를 불러오고 있습니다...</span>
-      </div>
+    <div className={`w-full h-full ${className || ""}`}>
+      <KakaoMap
+        center={{ lat: center.lat, lng: center.lng }}
+        level={zoom}
+        style={{ width: "100%", height: "100%", minHeight: "200px" }}
+        ref={mapRef}
+        onCreate={(map) => {
+          // 지도 생성 시 ref에 지도 인스턴스 저장
+          mapRef.current = map;
+        }}
+      >
+        {/* 마커 표시 */}
+        {validMarkers.map((marker, index) => (
+          <MapMarker
+            key={`marker-${index}`}
+            position={{ lat: marker.position.lat, lng: marker.position.lng }}
+            image={
+              marker.icon
+                ? {
+                    src: `/assets/marker-${marker.icon}.png`,
+                    size: { width: 35, height: 45 },
+                  }
+                : undefined
+            }
+          >
+            {marker.title && (
+              <div style={{ padding: "5px", color: "#000" }}>
+                {marker.title}
+              </div>
+            )}
+          </MapMarker>
+        ))}
+
+        {/* 경로 표시 */}
+        {pathCoordinates.length >= 2 && (
+          <Polyline
+            path={pathCoordinates}
+            strokeWeight={5}
+            strokeColor="#5B8DDE"
+            strokeOpacity={0.7}
+            strokeStyle="solid"
+          />
+        )}
+      </KakaoMap>
     </div>
   );
 };

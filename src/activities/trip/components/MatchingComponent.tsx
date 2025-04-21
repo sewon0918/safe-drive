@@ -2,7 +2,6 @@ import React from "react";
 import Button from "../../../components/common/Button";
 
 interface MatchingComponentProps {
-  elapsedTime: number;
   destination: string;
   femaleDriverOnly?: boolean;
   protectionModeEnabled?: boolean;
@@ -10,7 +9,6 @@ interface MatchingComponentProps {
 }
 
 const MatchingComponent: React.FC<MatchingComponentProps> = ({
-  elapsedTime,
   destination,
   femaleDriverOnly,
   protectionModeEnabled,
@@ -46,7 +44,6 @@ const MatchingComponent: React.FC<MatchingComponentProps> = ({
       <p className="text-gray-500 text-sm mb-4">
         {femaleDriverOnly ? "여성 기사님만 매칭 중입니다." : ""}
       </p>
-      <div className="text-gray-400 text-sm">대기 시간: {elapsedTime}초</div>
 
       <div className="mt-8 w-full">
         <p className="text-sm text-gray-600 mb-2">

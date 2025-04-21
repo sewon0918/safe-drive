@@ -22,7 +22,6 @@ export const TripActivity: React.FC<
   ActivityComponentProps<WaitingDriverParams>
 > = ({ params }) => {
   const { push, pop } = useFlow();
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [startTripCountdown, setStartTripCountdown] = useState<number | null>(
     null
   );
@@ -55,10 +54,6 @@ export const TripActivity: React.FC<
 
   // 대기 시간 계산을 위한 타이머 & 3초 후 기사 매칭
   useEffect(() => {
-    const timer = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
-    }, 1000);
-
     // 매칭되지 않았고, 매칭된 기사가 없을 때만 매칭 진행
     if (!isMatched && !matchedDriver && tripStatus === "matching") {
       // 3초 후 기사 정보 화면으로 이동
@@ -87,14 +82,9 @@ export const TripActivity: React.FC<
       }, 3000);
 
       return () => {
-        clearInterval(timer);
         clearTimeout(matchTimer);
       };
     }
-
-    return () => {
-      clearInterval(timer);
-    };
   }, [isMatched, matchedDriver, tripStatus, setMatchedDriver]);
 
   // 매칭 수락 상태 변경 감지 및 카운트다운 시작
@@ -294,8 +284,8 @@ export const TripActivity: React.FC<
                 ? [
                     {
                       position: {
-                        lat: originCoords.lat - 0.003,
-                        lng: originCoords.lng - 0.002,
+                        lat: destinationCoords.lat - 0.003,
+                        lng: destinationCoords.lng - 0.002,
                       },
                       title: `${matchedDriver.name} 기사님`,
                       icon: "driver",
@@ -303,6 +293,7 @@ export const TripActivity: React.FC<
                   ]
                 : []),
             ]}
+            zoom={3}
             path={{
               origin: originCoords,
               destination: destinationCoords,
@@ -314,7 +305,6 @@ export const TripActivity: React.FC<
         <div className="h-2/5 bg-white rounded-t-3xl shadow-lg px-4 py-6">
           {tripStatus === "matching" && (
             <MatchingComponent
-              elapsedTime={elapsedTime}
               destination={params.destination}
               femaleDriverOnly={params.femaleDriverOnly}
               protectionModeEnabled={params.protectionModeEnabled}

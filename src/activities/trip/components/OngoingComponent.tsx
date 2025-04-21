@@ -13,7 +13,7 @@ interface OngoingComponentProps {
   distance: string;
   duration: number;
   estimatedFare: string;
-  renderStars: (rating: number) => JSX.Element[];
+  renderStars: (rating: number) => React.ReactElement[];
   onEmergencyContact: () => void;
   onEmergencyReport: () => void;
 }

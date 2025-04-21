@@ -10,19 +10,13 @@ import { useGeolocation } from "../hooks/useGeolocation";
 export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
   // 높이 관련 상태 - 기본 높이를 조정
   const [formHeight, setFormHeight] = useState(400); // 300px에서 400px로 증가
-  const [isExpanded, setIsExpanded] = useState(false);
-  const {
-    destination,
-    femaleDriverOnly,
-    protectionMode,
-    requestTrip,
-    destinationCoords,
-  } = useTripStore();
+  const { destination, femaleDriverOnly, protectionMode, destinationCoords } =
+    useTripStore();
   const { push } = useFlow();
   const [isLoading, setIsLoading] = useState(false);
 
   // 현재 위치 가져오기
-  const { coordinates, isLoading: geolocationLoading } = useGeolocation({
+  const { coordinates } = useGeolocation({
     enableHighAccuracy: true,
     timeout: 10000, // 타임아웃 증가
     maximumAge: 30000, // 캐시된 위치 정보 허용 시간 증가
@@ -107,9 +101,6 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
 
     // 높이 업데이트
     setFormHeight(newHeight);
-
-    // 화면 절반 이상 차지하면 expanded 상태로 설정
-    setIsExpanded(newHeight > window.innerHeight * 0.5);
   };
 
   // 드래그 종료 핸들러
@@ -123,15 +114,11 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
     if (formHeight > window.innerHeight * 0.7) {
       // 최대 높이로 확장
       setFormHeight(maxHeight);
-      setIsExpanded(true);
     } else if (formHeight < window.innerHeight * 0.4) {
       // 임계값 조정
       // 최소 높이로 축소
       setFormHeight(minHeight);
-      setIsExpanded(false);
     } else {
-      // 중간 상태는 현재 높이로 유지
-      setIsExpanded(formHeight > window.innerHeight * 0.5);
     }
   };
 

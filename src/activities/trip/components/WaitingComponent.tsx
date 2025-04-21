@@ -13,7 +13,7 @@ interface WaitingComponentProps {
   driver: DriverInfo;
   countdown: number | null;
   onViewDriverDetails: () => void;
-  renderStars: (rating: number) => JSX.Element[];
+  renderStars: (rating: number) => React.ReactElement[];
 }
 
 const WaitingComponent: React.FC<WaitingComponentProps> = ({
