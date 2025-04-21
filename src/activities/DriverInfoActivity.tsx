@@ -133,7 +133,6 @@ export const DriverInfoActivity: React.FC<
             name={params.driverName}
             gender={params.driverGender}
             rating={params.driverRating}
-            renderStars={renderStars}
             additionalInfo={additionalInfo}
             imageSize="lg"
           />

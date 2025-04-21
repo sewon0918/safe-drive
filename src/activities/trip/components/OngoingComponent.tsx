@@ -201,7 +201,6 @@ const OngoingComponent: React.FC<OngoingComponentProps> = ({
         name={driver.name}
         gender={driver.gender}
         rating={driver.rating}
-        renderStars={renderStars}
         showDetailsButton
       />
     </div>

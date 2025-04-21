@@ -19,7 +19,6 @@ interface WaitingComponentProps {
 export const WaitingComponent: React.FC<WaitingComponentProps> = ({
   driver,
   onViewDriverDetails,
-  renderStars,
   arrivalMessage = "기사님이 곧 도착합니다...",
 }) => {
   // 기사 정보에 추가할 정보
@@ -42,7 +41,6 @@ export const WaitingComponent: React.FC<WaitingComponentProps> = ({
         name={driver.name}
         gender={driver.gender}
         rating={driver.rating}
-        renderStars={renderStars}
         additionalInfo={additionalInfo}
         showDetailsButton={true}
         onViewDetails={onViewDriverDetails}

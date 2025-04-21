@@ -250,7 +250,6 @@ export const TripCompletedActivity: React.FC<
               name={params.driverName}
               gender={params.driverGender}
               rating={params.driverRating}
-              renderStars={renderStars}
             />
           </div>
 

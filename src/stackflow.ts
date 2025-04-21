@@ -12,7 +12,12 @@ import { ShareLocationActivity } from "./activities/ShareLocationActivity";
 import { stackflow } from "@stackflow/react";
 import {
   TripCompletedActivity, // 새로 추가한 액티비티
+  HomeActivity,
 } from "./activities";
+import DriverHomeActivity from "./activities/driver/DriverHomeActivity";
+import DriverTripActivity from "./activities/driver/DriverTripActivity";
+import { PassengerInfoActivity } from "./activities/driver/PassengerInfoActivity";
+import DriverTripCompletedActivity from "./activities/driver/DriverTripCompletedActivity";
 
 // Stackflow 초기화
 export const { Stack, useFlow } = stackflow({
@@ -20,12 +25,17 @@ export const { Stack, useFlow } = stackflow({
 
   // 앱에서 사용할 액티비티(화면) 정의
   activities: {
+    Home: HomeActivity,
     CallDriver: CallDriverActivity,
     SearchAddress: SearchAddressActivity,
     DriverInfo: DriverInfoActivity,
     Trip: TripActivity, // TripActivity 추가
     ShareLocation: ShareLocationActivity,
     TripCompleted: TripCompletedActivity, // 새로 추가한 화면
+    DriverHome: DriverHomeActivity,
+    DriverTrip: DriverTripActivity,
+    PassengerInfo: PassengerInfoActivity,
+    DriverTripCompleted: DriverTripCompletedActivity,
   },
 
   // 필요한 플러그인 설정
@@ -36,15 +46,20 @@ export const { Stack, useFlow } = stackflow({
     }),
     historySyncPlugin({
       routes: {
-        CallDriver: "/",
+        Home: "/",
+        CallDriver: "/call-driver",
         SearchAddress: "/search-address",
         DriverInfo: "/driver-info",
         Trip: "/trip",
         ShareLocation: "/share-location",
         TripCompleted: "/trip-completed",
+        DriverHome: "/driver-home",
+        DriverTrip: "/driver-trip",
+        PassengerInfo: "/passenger-info",
+        DriverTripCompleted: "/driver-trip-completed",
       },
-      fallbackActivity: () => "CallDriver",
+      fallbackActivity: () => "Home",
     }),
   ],
-  initialActivity: () => "CallDriver",
+  initialActivity: () => "Home",
 });
