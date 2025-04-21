@@ -2,133 +2,158 @@ import React, { useEffect, useRef } from "react";
 import { Map as KakaoMap, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 interface MapProps {
-  className?: string;
   initialCenter: { lat: number; lng: number };
-  zoom?: number;
   markers?: Array<{
     position: { lat: number; lng: number };
     title?: string;
+    icon?: string;
   }>;
-  showRoute?: boolean; // 경로 표시 여부
-  fitBounds?: boolean; // 모든 마커가 보이도록 자동 조정 여부
+  path?: {
+    origin: { lat: number; lng: number };
+    destination: { lat: number; lng: number };
+    waypoints?: Array<{ lat: number; lng: number }>;
+  };
+  zoom?: number;
+  className?: string;
 }
 
 const Map: React.FC<MapProps> = ({
-  className,
   initialCenter,
-  zoom = 3,
-  markers,
-  showRoute = false,
-  fitBounds = false,
+  markers = [],
+  path,
+  zoom = 15,
+  className,
 }) => {
-  // 지도 중심점 계산 (출발지와 도착지의 중간 지점)
-  let center = initialCenter;
+  const mapRef = useRef<HTMLDivElement>(null);
+  const kakaoMapRef = useRef<any>(null);
 
-  if (markers && markers.length >= 2 && showRoute) {
-    center = {
-      lat: (markers[0].position.lat + markers[1].position.lat) / 2,
-      lng: (markers[0].position.lng + markers[1].position.lng) / 2,
-    };
-  }
+  // 초기 중심 좌표 (서울)
+  const defaultCenter = { lat: 37.5665, lng: 126.978 };
 
-  // 지도 객체 참조
-  const mapRef = useRef<kakao.maps.Map>(null);
+  // 유효한 좌표인지 확인하는 함수
+  const isValidCoord = (coord: any): boolean => {
+    return (
+      coord &&
+      typeof coord === "object" &&
+      typeof coord.lat === "number" &&
+      typeof coord.lng === "number" &&
+      !isNaN(coord.lat) &&
+      !isNaN(coord.lng)
+    );
+  };
 
-  // 모든 마커를 포함하는 영역으로 지도 범위 재설정
+  // 지도 초기화
   useEffect(() => {
-    if (!fitBounds || !mapRef.current || !markers || markers.length < 2) return;
+    if (!window.kakao || !mapRef.current) return;
 
-    // 지도 객체 가져오기
-    const map = mapRef.current;
+    // 유효한 중심 좌표 확보
+    const center = isValidCoord(initialCenter) ? initialCenter : defaultCenter;
 
-    // setTimeout을 사용하여 지도가 완전히 로드된 후에 실행
-    setTimeout(() => {
+    const options = {
+      center: new window.kakao.maps.LatLng(center.lat, center.lng),
+      level: zoom,
+    };
+
+    const map = new window.kakao.maps.Map(mapRef.current, options);
+    kakaoMapRef.current = map;
+
+    return () => {
+      kakaoMapRef.current = null;
+    };
+  }, [initialCenter, zoom]);
+
+  // 마커 추가
+  useEffect(() => {
+    if (!kakaoMapRef.current || !markers || markers.length === 0) return;
+
+    const map = kakaoMapRef.current;
+    const bounds = new window.kakao.maps.LatLngBounds();
+    const createdMarkers: any[] = [];
+
+    markers.forEach((markerInfo) => {
+      // 마커 위치가 유효한지 확인
+      if (!isValidCoord(markerInfo.position)) {
+        console.warn("Invalid marker position:", markerInfo);
+        return;
+      }
+
+      const position = new window.kakao.maps.LatLng(
+        markerInfo.position.lat,
+        markerInfo.position.lng
+      );
+
+      const marker = new window.kakao.maps.Marker({
+        position,
+        map,
+        title: markerInfo.title,
+      });
+
+      bounds.extend(position);
+      createdMarkers.push(marker);
+    });
+
+    // 지도 범위 재설정 (마커가 2개 이상일 때만)
+    if (createdMarkers.length >= 2) {
       try {
-        // LatLngBounds 객체 생성
-        const bounds = new window.kakao.maps.LatLngBounds();
-
-        // 모든 마커의 위치를 bounds에 추가
-        markers.forEach((marker) => {
-          bounds.extend(
-            new window.kakao.maps.LatLng(
-              marker.position.lat,
-              marker.position.lng
-            )
-          );
-        });
-
-        // 지도 범위 재설정
-        map.setBounds(bounds, 100); // 여백 100px 추가
+        map.setBounds(bounds);
       } catch (error) {
         console.error("지도 범위 재설정 중 오류:", error);
       }
-    }, 300);
-  }, [markers, fitBounds]);
+    } else if (createdMarkers.length === 1) {
+      // 마커가 하나만 있을 경우 해당 위치로 중심 이동
+      map.setCenter(createdMarkers[0].getPosition());
+    }
+
+    return () => {
+      createdMarkers.forEach((marker) => marker.setMap(null));
+    };
+  }, [markers]);
+
+  // 경로 그리기
+  useEffect(() => {
+    if (!kakaoMapRef.current || !path) return;
+
+    // path.origin과 path.destination이 유효한지 확인
+    if (!isValidCoord(path.origin) || !isValidCoord(path.destination)) {
+      console.warn("Invalid path coordinates:", path);
+      return;
+    }
+
+    const map = kakaoMapRef.current;
+    const polyline = new window.kakao.maps.Polyline({
+      path: [
+        new window.kakao.maps.LatLng(path.origin.lat, path.origin.lng),
+        ...(path.waypoints
+          ?.filter(isValidCoord)
+          .map((wp) => new window.kakao.maps.LatLng(wp.lat, wp.lng)) || []),
+        new window.kakao.maps.LatLng(
+          path.destination.lat,
+          path.destination.lng
+        ),
+      ],
+      strokeWeight: 5,
+      strokeColor: "#5B8DDE",
+      strokeOpacity: 0.7,
+      strokeStyle: "solid",
+    });
+
+    polyline.setMap(map);
+
+    return () => {
+      polyline.setMap(null);
+    };
+  }, [path]);
 
   return (
-    <div className={className}>
-      <KakaoMap
-        center={center}
-        style={{ width: "100%", height: "100%" }}
-        level={zoom}
-        ref={mapRef}
-      >
-        {/* 출발지 마커 */}
-        {markers && markers.length > 0 && (
-          <MapMarker
-            position={markers[0].position}
-            image={{
-              src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png",
-              size: { width: 50, height: 45 },
-              options: { offset: { x: 15, y: 43 } },
-            }}
-          >
-            <div style={{ padding: "5px", color: "#000" }}>
-              {markers[0].title || "출발지"}
-            </div>
-          </MapMarker>
-        )}
-
-        {/* 도착지 마커 */}
-        {markers && markers.length > 1 && (
-          <MapMarker
-            position={markers[1].position}
-            image={{
-              src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png",
-              size: { width: 50, height: 45 },
-              options: { offset: { x: 15, y: 43 } },
-            }}
-          >
-            <div style={{ padding: "5px", color: "#000" }}>
-              {markers[1].title || "도착지"}
-            </div>
-          </MapMarker>
-        )}
-
-        {/* 경로 선 */}
-        {markers && markers.length >= 2 && showRoute && (
-          <Polyline
-            path={[markers[0].position, markers[1].position]}
-            strokeWeight={5}
-            strokeColor="#2196F3"
-            strokeOpacity={0.7}
-            strokeStyle="solid"
-          />
-        )}
-
-        {/* 나머지 마커들 */}
-        {markers &&
-          markers.length > 2 &&
-          markers
-            .slice(2)
-            .map((marker, index) => (
-              <MapMarker
-                key={`additional-${index}`}
-                position={marker.position}
-                title={marker.title}
-              />
-            ))}
-      </KakaoMap>
+    <div
+      ref={mapRef}
+      className={`w-full h-full ${className || ""}`}
+      style={{ minHeight: "200px" }}
+    >
+      {/* 지도를 불러오는 동안 표시할 내용 */}
+      <div className="flex items-center justify-center h-full bg-gray-100">
+        <span className="text-gray-500">지도를 불러오고 있습니다...</span>
+      </div>
     </div>
   );
 };

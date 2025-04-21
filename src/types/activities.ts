@@ -31,3 +31,12 @@ export interface TripCompleteParams {
   tripId: string;
   fare: number;
 }
+
+// 추가 필요한 파라미터 타입
+export interface DriverInfoParams {
+  driverId: string;
+  driverName: string;
+  driverRating: number;
+  driverGender: "male" | "female";
+  estimatedArrival: string;
+}

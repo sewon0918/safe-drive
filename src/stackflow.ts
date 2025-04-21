@@ -1,11 +1,13 @@
-import { stackflow } from "@stackflow/react";
 import { basicRendererPlugin } from "@stackflow/plugin-renderer-basic";
 import { basicUIPlugin } from "@stackflow/plugin-basic-ui";
 
 // 앱에서 사용할 액티비티(화면) 들을 가져옵니다
 import { CallDriverActivity } from "./activities/CallDriverActivity";
-import { WaitingDriverActivity } from "./activities/WaitingDriverActivity";
+// import { WaitingDriverActivity } from "./activities/WaitingDriverActivity"; // 주석 처리
 import { SearchAddressActivity } from "./activities/SearchAddressActivity";
+import { DriverInfoActivity } from "./activities/DriverInfoActivity";
+import { TripActivity } from "./activities/TripActivity"; // TripActivity 추가
+import { stackflow } from "@stackflow/react";
 
 // Stackflow 초기화
 export const { Stack, useFlow } = stackflow({
@@ -14,8 +16,9 @@ export const { Stack, useFlow } = stackflow({
   // 앱에서 사용할 액티비티(화면) 정의
   activities: {
     CallDriver: CallDriverActivity,
-    WaitingDriver: WaitingDriverActivity,
     SearchAddress: SearchAddressActivity,
+    DriverInfo: DriverInfoActivity,
+    Trip: TripActivity, // TripActivity 추가
   },
 
   // 필요한 플러그인 설정

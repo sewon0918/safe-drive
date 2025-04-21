@@ -19,14 +19,15 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
     destinationCoords,
   } = useTripStore();
   const { push } = useFlow();
+  const [isLoading, setIsLoading] = useState(false);
 
   // 현재 위치 가져오기
-  const { coordinates, isLoading } = useGeolocation({
+  const { coordinates, isLoading: geolocationLoading } = useGeolocation({
     enableHighAccuracy: true,
     timeout: 10000, // 타임아웃 증가
     maximumAge: 30000, // 캐시된 위치 정보 허용 시간 증가
   });
-
+  console.log("coordinates", coordinates);
   // 드래그 관련 상태
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
@@ -35,42 +36,31 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
   const minHeight = 380; // 최소 높이 증가 (하단 버튼 영역 고려)
   const maxHeight = window.innerHeight * 0.9; // 최대 높이 (화면의 90%)
 
-  const handleCallDriver = async () => {
-    if (!destination || destination.trim() === "") {
-      alert("목적지를 입력해주세요.");
-      return;
-    }
+  // 기본 좌표값 (서울 중심)
+  const DEFAULT_COORDS = { lat: 37.5665, lng: 126.978 };
 
-    const request = {
-      destination: {
-        address: destination,
-        // 검색해서 선택한 좌표가 있으면 사용, 없으면 기본값
-        latitude: destinationCoords?.lat || 37.5665,
-        longitude: destinationCoords?.lng || 126.978,
-      },
-      origin: {
-        address: "현재 위치",
-        latitude: coordinates.lat,
-        longitude: coordinates.lng,
-      },
-      femaleDriverOnly,
-      protectionModeEnabled: protectionMode,
+  const handleCallDriver = () => {
+    setIsLoading(true);
+
+    // 출발지/목적지 좌표 유효성 검사
+    const validOriginCoords = coordinates || DEFAULT_COORDS;
+    const validDestCoords = destinationCoords || {
+      lat: 37.5012,
+      lng: 127.0396,
     };
 
-    const success = await requestTrip(request);
+    setIsLoading(false);
 
-    if (success) {
-      console.log("운행 요청 성공");
-      push("WaitingDriver", {
-        destination: request.destination.address,
-        destinationLat: request.destination.latitude,
-        destinationLng: request.destination.longitude,
-        originLat: request.origin.latitude,
-        originLng: request.origin.longitude,
-        femaleDriverOnly,
-        protectionModeEnabled: protectionMode,
-      });
-    }
+    // 대기 화면으로 이동 (WaitingDriver를 Trip으로 변경)
+    push("Trip", {
+      destination: destination || "목적지 미설정",
+      destinationLat: validDestCoords.lat,
+      destinationLng: validDestCoords.lng,
+      originLat: validOriginCoords.lat,
+      originLng: validOriginCoords.lng,
+      femaleDriverOnly: femaleDriverOnly,
+      protectionModeEnabled: protectionMode,
+    });
   };
 
   // 드래그 시작 핸들러
@@ -177,7 +167,7 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
   const mapHeight = `calc(100vh - ${formHeight}px)`;
 
   return (
-    <AppScreen>
+    <AppScreen appBar={{ title: "대리운전 호출" }}>
       <div className="flex flex-col h-full bg-gray-100">
         {/* 지도 섹션 */}
         <div
@@ -205,7 +195,7 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
           </div>
 
           {/* 폼 내용은 스크롤 가능하게 */}
-          <CallForm onSubmit={handleCallDriver} />
+          <CallForm onSubmit={handleCallDriver} isLoading={isLoading} />
         </div>
       </div>
     </AppScreen>

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useTripStore } from "../../store/tripStore";
 import { useFlow } from "../../stackflow";
+import Button from "../common/Button";
 
 interface CallFormProps {
   onSubmit: () => void;
+  isLoading?: boolean;
 }
 
-const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
+const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
   const {
     destination,
     setDestination,
@@ -27,6 +29,13 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
     best: "2.4만원",
     standard: "2만원",
   };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    onSubmit();
+  };
+
+  const isFormValid = true; // Implement form validation logic
 
   return (
     <div className="w-full flex flex-col h-full px-4 ">
@@ -197,12 +206,18 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
           </div>
         </div>
 
-        <button
-          onClick={onSubmit}
-          className="w-full py-4 bg-blue-500 hover:bg-blue-600 font-bold rounded-lg text-center text-black"
-        >
-          대리 호출하기
-        </button>
+        <div className="mt-8">
+          <Button
+            type="submit"
+            size="lg"
+            fullWidth
+            disabled={!isFormValid}
+            onClick={onSubmit}
+            isLoading={isLoading}
+          >
+            호출하기
+          </Button>
+        </div>
       </div>
     </div>
   );
