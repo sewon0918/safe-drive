@@ -31,8 +31,6 @@ export const DriverHomeActivity: React.FC<ActivityComponentProps> = () => {
       <div className="flex flex-col h-full bg-gray-50">
         {/* 콜 리스트 */}
         <div className="flex-1 overflow-auto p-4">
-          <h3 className="text-lg font-semibold mb-3">주변 대기 콜</h3>
-
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>

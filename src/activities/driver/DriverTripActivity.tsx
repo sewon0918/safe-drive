@@ -5,6 +5,7 @@ import { AppScreen } from "@stackflow/plugin-basic-ui";
 import Map from "../../components/common/Map";
 import PassengerProfileCard from "./components/PassengerProfileCard";
 import { useMatchCallStore } from "../../stores/matchCallStore";
+import Button from "../../components/common/Button";
 
 // 간소화된 파라미터 타입 - ID만 필요
 export interface DriverTripParams {
@@ -15,8 +16,14 @@ export const DriverTripActivity: React.FC<
   ActivityComponentProps<DriverTripParams>
 > = ({ params }) => {
   const { push, pop } = useFlow();
-  const { getCallById, acceptCall, rejectCall, tripStatus, setTripStatus } =
-    useMatchCallStore();
+  const {
+    getCallById,
+    acceptCall,
+    rejectCall,
+    completeCall,
+    tripStatus,
+    setTripStatus,
+  } = useMatchCallStore();
 
   // ID로 콜 정보 조회
   const callInfo = getCallById(params.callId);
@@ -63,6 +70,7 @@ export const DriverTripActivity: React.FC<
 
   // 운행 완료
   const handleCompleteTrip = () => {
+    completeCall(params.callId);
     setTripStatus("completed");
     // 잠시 후 완료 화면으로 이동
     push("DriverTripCompleted", {
@@ -81,7 +89,10 @@ export const DriverTripActivity: React.FC<
     lat: callInfo.destinationCoords.lat,
     lng: callInfo.destinationCoords.lng,
   };
-
+  const centerCoords = {
+    lat: (callInfo.originCoords.lat + callInfo.destinationCoords.lat) / 2,
+    lng: (callInfo.originCoords.lng + callInfo.destinationCoords.lng) / 2,
+  };
   // 지도에 표시할 마커
   const mapMarkers = [
     {
@@ -93,7 +104,6 @@ export const DriverTripActivity: React.FC<
       title: "목적지",
     },
   ];
-  console.log("mapMarkers", mapMarkers);
   // 상태에 따른 메시지 표시 수정
   const getStatusMessage = () => {
     switch (tripStatus) {
@@ -116,38 +126,38 @@ export const DriverTripActivity: React.FC<
       case "pending":
         return (
           <div className="flex space-x-3">
-            <button
+            <Button
+              size="lg"
+              variant="outline"
+              fullWidth
+              className="flex-1"
               onClick={handleRejectCall}
-              className="flex-1 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg"
             >
-              콜 거절
-            </button>
-            <button
+              거절하기
+            </Button>
+
+            <Button
+              size="lg"
+              fullWidth
+              className="flex-1"
               onClick={handleAcceptCall}
-              className="flex-1 py-3 bg-blue-500 text-white font-medium rounded-lg"
             >
-              콜 수락
-            </button>
+              수락하기
+            </Button>
           </div>
         );
       case "heading":
-        // 헤딩 상태일 때 바로 운행 시작 버튼 표시
         return (
-          <button
-            onClick={handleStartTrip}
-            className="w-full py-4 bg-blue-500 text-white font-medium rounded-lg"
-          >
+          <Button size="lg" fullWidth onClick={handleStartTrip}>
             운행 시작하기
-          </button>
+          </Button>
         );
+
       case "inProgress":
         return (
-          <button
-            onClick={handleCompleteTrip}
-            className="w-full py-4 bg-red-500 text-white font-medium rounded-lg"
-          >
+          <Button size="lg" fullWidth onClick={handleCompleteTrip}>
             운행 완료하기
-          </button>
+          </Button>
         );
       default:
         return null;
@@ -173,7 +183,7 @@ export const DriverTripActivity: React.FC<
         {/* 지도 영역 */}
         <div className="h-3/5 relative">
           <Map
-            initialCenter={originCoords}
+            initialCenter={centerCoords}
             markers={mapMarkers}
             zoom={3}
             path={{
@@ -195,7 +205,7 @@ export const DriverTripActivity: React.FC<
             onViewDetails={handleViewPassengerInfo}
           />
 
-          <div className="flex-1 py-4">
+          <div className="flex-1 py-4 text-left">
             <div className="space-y-2">
               <div className="flex items-start">
                 <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center">

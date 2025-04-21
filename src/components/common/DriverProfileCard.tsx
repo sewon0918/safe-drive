@@ -9,7 +9,6 @@ interface DriverProfileCardProps {
   imageSize?: "sm" | "md" | "lg";
   showDetailsButton?: boolean;
   onViewDetails?: () => void;
-  profileImage?: string;
 }
 
 /**
@@ -23,7 +22,6 @@ const DriverProfileCard: React.FC<DriverProfileCardProps> = ({
   imageSize = "md",
   showDetailsButton = false,
   onViewDetails,
-  profileImage,
 }) => {
   // 이미지 크기에 따른 스타일 클래스
   const imageSizeClass = {
@@ -33,31 +31,24 @@ const DriverProfileCard: React.FC<DriverProfileCardProps> = ({
   };
 
   return (
-    <div className="bg-white p-3 rounded-lg shadow-sm">
+    <div className="w-full bg-white p-3 rounded-lg">
       <div className="flex items-center">
         <div
-          className={`rounded-full overflow-hidden bg-gray-100 mr-3 flex-shrink-0 ${imageSizeClass[imageSize]}`}
+          className={`rounded-full overflow-hidden bg-gray-100 mr-3 flex-shrink-0 ${imageSizeClass[imageSize]}
+          flex items-center justify-center`}
         >
-          {profileImage ? (
-            <img
-              src={profileImage}
-              alt={name}
-              className="w-full h-full object-cover"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-8 w-8 text-gray-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+              clipRule="evenodd"
             />
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-gray-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
+          </svg>
         </div>
         <div className="flex-1 text-left">
           <div className="flex items-center justify-between">
@@ -69,26 +60,13 @@ const DriverProfileCard: React.FC<DriverProfileCardProps> = ({
             </div>
 
             {/* 상세 정보 버튼 (이름 옆에 배치) */}
+
             {showDetailsButton && onViewDetails && (
               <button
                 onClick={onViewDetails}
-                className="text-blue-500 text-xs underline flex items-center"
+                className="text-blue-500 text-sm hover:underline"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3 w-3 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                상세 정보
+                상세정보
               </button>
             )}
           </div>

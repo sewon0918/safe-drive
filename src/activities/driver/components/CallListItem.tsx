@@ -21,10 +21,7 @@ interface CallListItemProps {
 
 const CallListItem: React.FC<CallListItemProps> = ({ call, onClick }) => {
   return (
-    <div
-      className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow"
-      onClick={onClick}
-    >
+    <div className="bg-white rounded-lg  p-4 cursor-pointer " onClick={onClick}>
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center">
           <div

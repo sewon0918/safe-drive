@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useFlow } from "../stackflow";
-import { ActivityComponentProps } from "../types/activities";
+import { useFlow } from "../../stackflow";
+import { ActivityComponentProps } from "../../types/activities";
 import { AppScreen } from "@stackflow/plugin-basic-ui";
-import { useTripStore } from "../store/tripStore";
+import { useTripStore } from "../../store/tripStore";
 import DaumPostcodeEmbed from "react-daum-postcode";
 
 interface SearchAddressParams {

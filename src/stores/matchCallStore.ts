@@ -25,11 +25,11 @@ interface MatchCallState {
 
   // callStore에서 가져온 함수들
   setCalls: (calls: CallRequestWithCoords[]) => void;
-  setLoading: (loading: boolean) => void;
   getCallById: (id: string) => CallRequestWithCoords | undefined;
   fetchCalls: () => Promise<void>;
   acceptCall: (id: string) => void;
   rejectCall: (id: string) => void;
+  completeCall: (id: string) => void;
 
   // 기존 matchCallStore 함수들
   setTripStatus: (status: TripStatus) => void;
@@ -49,8 +49,6 @@ export const useMatchCallStore = create<MatchCallState>((set, get) => ({
   // callStore에서 가져온 함수들
   setCalls: (calls) => set({ calls }),
 
-  setLoading: (loading) => set({ loading }),
-
   getCallById: (id) => {
     return get().calls.find((call) => call.id === id);
   },
@@ -59,7 +57,7 @@ export const useMatchCallStore = create<MatchCallState>((set, get) => ({
     set({ loading: true });
 
     // API 호출 지연 시뮬레이션
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 모의 데이터 - 좌표 정보 포함
     const mockCalls: CallRequestWithCoords[] = [
@@ -157,6 +155,14 @@ export const useMatchCallStore = create<MatchCallState>((set, get) => ({
     set((state) => ({
       ...state,
       calls: state.calls.filter((call) => call.id !== id),
+    }));
+  },
+  completeCall: (id) => {
+    set((state) => ({
+      ...state,
+      calls: state.calls.filter((call) => call.id !== id),
+      matchedCallId: null,
+      tripStatus: "pending",
     }));
   },
 

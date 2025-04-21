@@ -3,12 +3,12 @@ import { basicUIPlugin } from "@stackflow/plugin-basic-ui";
 import { historySyncPlugin } from "@stackflow/plugin-history-sync";
 
 // 앱에서 사용할 액티비티(화면) 들을 가져옵니다
-import { CallDriverActivity } from "./activities/CallDriverActivity";
+import { CallDriverActivity } from "./activities/passenger/call-driver/CallDriverActivity";
 // import { WaitingDriverActivity } from "./activities/WaitingDriverActivity"; // 주석 처리
-import { SearchAddressActivity } from "./activities/SearchAddressActivity";
-import { DriverInfoActivity } from "./activities/DriverInfoActivity";
-import { TripActivity } from "./activities/TripActivity"; // TripActivity 추가
-import { ShareLocationActivity } from "./activities/ShareLocationActivity";
+import { SearchAddressActivity } from "./activities/passenger/SearchAddressActivity";
+import { DriverInfoActivity } from "./activities/passenger/DriverInfoActivity";
+import { TripActivity } from "./activities/passenger/TripActivity"; // TripActivity 추가
+import { ShareLocationActivity } from "./activities/passenger/ShareLocationActivity";
 import { stackflow } from "@stackflow/react";
 import {
   TripCompletedActivity, // 새로 추가한 액티비티

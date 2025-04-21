@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { TripRequest } from "../types";
 
 interface TripState {
+  origin: string;
+  setOrigin: (origin: string) => void;
   destination: string;
   setDestination: (destination: string) => void;
   destinationCoords: { lat: number; lng: number } | null;
@@ -16,6 +18,10 @@ interface TripState {
 
 // 간단한 트립 스토어 구현
 export const useTripStore = create<TripState>((set) => ({
+  // 출발지
+  origin: "",
+  setOrigin: (origin) => set({ origin }),
+
   // 목적지
   destination: "",
   setDestination: (destination) => set({ destination }),

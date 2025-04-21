@@ -4,6 +4,7 @@ import { ActivityComponentProps } from "../../types/activities";
 import { AppScreen } from "@stackflow/plugin-basic-ui";
 import { useMatchCallStore } from "../../stores/matchCallStore";
 import StarRating from "../../components/common/StarRating";
+import Button from "../../components/common/Button";
 
 // 기사용 운행 완료 화면 파라미터 타입
 interface DriverTripCompletedParams {
@@ -38,10 +39,7 @@ export const DriverTripCompletedActivity: React.FC<
       <div className="flex flex-col h-full bg-white">
         {/* 요약 정보 */}
         <div className="bg-blue-500 px-6 pt-8 pb-6 text-white">
-          <h2 className="text-2xl font-bold mb-1">운행이 완료되었습니다</h2>
-          <p className="text-blue-100 mb-6">
-            승객에게 서비스 품질을 평가받았습니다.
-          </p>
+          <h2 className="text-2xl font-bold mb-4">운행이 완료되었습니다</h2>
 
           <div className="bg-white rounded-lg shadow-md p-4 text-black mb-4">
             <div className="flex justify-between items-center">
@@ -88,12 +86,9 @@ export const DriverTripCompletedActivity: React.FC<
 
         {/* 버튼 영역 */}
         <div className="px-6 pb-8 space-y-3">
-          <button
-            onClick={handleNextCall}
-            className="w-full py-4 bg-blue-500 text-white font-medium rounded-lg"
-          >
+          <Button size="lg" fullWidth onClick={handleNextCall}>
             다음 콜 찾기
-          </button>
+          </Button>
         </div>
       </div>
     </AppScreen>

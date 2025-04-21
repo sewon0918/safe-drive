@@ -40,11 +40,11 @@ const Button: React.FC<ButtonProps> = ({
 
   // 종류별 스타일
   const variantStyles = {
-    primary: "bg-black  text-white",
-    secondary: "bg-gray-200  text-gray-800",
-    danger: "bg-red-500  text-white",
-    outline: "border border-current text-blue-500 ",
-    text: "bg-transparent text-blue-500 ",
+    primary: "border-0 bg-black  text-white",
+    secondary: "border-0 bg-gray-200  text-gray-800",
+    danger: "border-0 bg-red-500  text-white",
+    outline: "border border-1 border-gray-300 text-black",
+    text: "border-0 bg-transparent text-blue-500 ",
   };
 
   // 너비 스타일

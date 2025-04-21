@@ -1,5 +1,5 @@
 import React from "react";
-import DriverProfileCard from "../../../components/common/DriverProfileCard";
+import DriverProfileCard from "../../../../components/common/DriverProfileCard";
 
 interface DriverInfo {
   id: string;
@@ -12,7 +12,6 @@ interface DriverInfo {
 interface WaitingComponentProps {
   driver: DriverInfo;
   onViewDriverDetails: () => void;
-  renderStars: (rating: number) => React.ReactElement[];
   arrivalMessage?: string;
 }
 

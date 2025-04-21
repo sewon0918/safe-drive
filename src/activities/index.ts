@@ -1,5 +1,5 @@
-export { TripActivity } from "./TripActivity";
-export { DriverInfoActivity } from "./DriverInfoActivity";
-export { ShareLocationActivity } from "./ShareLocationActivity";
-export { TripCompletedActivity } from "./TripCompletedActivity";
+export { TripActivity } from "./passenger/TripActivity";
+export { DriverInfoActivity } from "./passenger/DriverInfoActivity";
+export { ShareLocationActivity } from "./passenger/ShareLocationActivity";
+export { TripCompletedActivity } from "./passenger/TripCompletedActivity";
 export { HomeActivity } from "./HomeActivity";

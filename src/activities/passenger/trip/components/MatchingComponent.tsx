@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../../../components/common/Button";
+import Button from "../../../../components/common/Button";
 
 interface MatchingComponentProps {
   destination: string;
@@ -54,7 +54,7 @@ const MatchingComponent: React.FC<MatchingComponentProps> = ({
           {protectionModeEnabled ? "활성화" : "비활성화"}
         </p>
 
-        <Button variant="danger" size="lg" fullWidth onClick={onCancel}>
+        <Button size="lg" fullWidth onClick={onCancel}>
           호출 취소하기
         </Button>
       </div>

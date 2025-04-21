@@ -1,7 +1,6 @@
 import React from "react";
-import Button from "../../../components/common/Button";
-import DriverProfileCard from "../../../components/common/DriverProfileCard";
-import { useFlow } from "../../../stackflow";
+import Button from "../../../../components/common/Button";
+import DriverProfileCard from "../../../../components/common/DriverProfileCard";
 
 interface DriverInfo {
   id: string;
@@ -15,7 +14,6 @@ interface OngoingComponentProps {
   distance: string;
   duration: number;
   estimatedFare: string;
-  renderStars: (rating: number) => React.ReactElement[];
   onEmergencyReport: () => void;
   originCoords: { lat: number; lng: number };
   destinationCoords: { lat: number; lng: number };
@@ -26,13 +24,10 @@ const OngoingComponent: React.FC<OngoingComponentProps> = ({
   distance,
   duration,
   estimatedFare,
-  renderStars,
   onEmergencyReport,
   originCoords,
   destinationCoords,
 }) => {
-  const { push } = useFlow();
-
   const handleShareLocation = async () => {
     try {
       navigator.geolocation.getCurrentPosition(
@@ -77,39 +72,6 @@ const OngoingComponent: React.FC<OngoingComponentProps> = ({
     }
   };
 
-  const handleViewLocation = async () => {
-    try {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
-          push("ShareLocation", {
-            originLat: originCoords.lat,
-            originLng: originCoords.lng,
-            destinationLat: destinationCoords.lat,
-            destinationLng: destinationCoords.lng,
-            currentLat: latitude,
-            currentLng: longitude,
-            driverName: driver.name,
-            estimatedTime: duration,
-            estimatedFare: estimatedFare,
-          });
-        },
-        (error) => {
-          console.error("위치 정보를 가져오는데 실패했습니다:", error);
-          alert("위치 정보를 가져오는데 실패했습니다.");
-        }
-      );
-    } catch (error) {
-      console.error("위치 정보 화면으로 이동하는데 실패했습니다:", error);
-      alert("위치 정보 화면으로 이동하는데 실패했습니다.");
-    }
-  };
-
-  const handleShareOptions = () => {
-    handleShareLocation();
-  };
-
   return (
     <div className="flex flex-col h-full">
       {/* 운행 시작 알림 */}
@@ -117,33 +79,17 @@ const OngoingComponent: React.FC<OngoingComponentProps> = ({
       {/* 중요 기능 버튼 영역 - 상단에 배치 */}
       <div className="flex gap-4 mb-3">
         <Button
-          variant="outline"
+          variant="primary"
           size="md"
-          className="flex-1 bg-blue-50 border-blue-200"
+          className="flex-1 "
           onClick={handleShareLocation}
         >
-          <div className="flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1 text-blue-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-              />
-            </svg>
-            <span className="text-sm">위치 공유</span>
-          </div>
+          위치 공유
         </Button>
         <Button
-          variant="outline"
+          variant="danger"
           size="md"
-          className="flex-1 bg-red-50 border-red-200"
+          className="flex-1"
           onClick={onEmergencyReport}
         >
           <div className="flex items-center justify-center">
@@ -167,7 +113,7 @@ const OngoingComponent: React.FC<OngoingComponentProps> = ({
       </div>
 
       {/* 이동 정보 */}
-      <div className="bg-white p-3 rounded-lg shadow-sm mb-3">
+      <div className="bg-white p-3 rounded-lg  mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-gray-50 p-2 rounded-md">
             <div className="text-xs text-gray-500">예상 도착 시간</div>

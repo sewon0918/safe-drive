@@ -1,17 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useFlow } from "../stackflow";
-import Map from "../components/common/Map";
-import CallForm from "../components/passenger/CallForm";
-import { useTripStore } from "../store/tripStore";
-import { ActivityComponentProps } from "../types/activities";
+import { useFlow } from "../../../stackflow";
+import Map from "../../../components/common/Map";
+import CallForm from "./components/CallForm";
+import { useTripStore } from "../../../store/tripStore";
+import { ActivityComponentProps } from "../../../types/activities";
 import { AppScreen } from "@stackflow/plugin-basic-ui";
-import { useGeolocation } from "../hooks/useGeolocation";
+import { useGeolocation } from "../../../hooks/useGeolocation";
 
 export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
   // 높이 관련 상태 - 기본 높이를 조정
   const [formHeight, setFormHeight] = useState(400); // 300px에서 400px로 증가
-  const { destination, femaleDriverOnly, protectionMode, destinationCoords } =
-    useTripStore();
+  const {
+    origin,
+    destination,
+    femaleDriverOnly,
+    protectionMode,
+    destinationCoords,
+  } = useTripStore();
   const { push } = useFlow();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,7 +55,7 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
       destination: destination || "목적지 미설정",
       destinationLat: validDestCoords.lat,
       destinationLng: validDestCoords.lng,
-      origin: "출발지",
+      origin: origin || "출발지 미설정",
       originLat: validOriginCoords.lat,
       originLng: validOriginCoords.lng,
       femaleDriverOnly: femaleDriverOnly,
@@ -171,11 +176,24 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
                 position: coordinates,
                 title: "현위치",
               },
+              ...(destinationCoords
+                ? [
+                    {
+                      position: destinationCoords,
+                      title: "목적지",
+                    },
+                  ]
+                : []),
             ]}
+            {...(destinationCoords && {
+              path: {
+                origin: coordinates,
+                destination: destinationCoords,
+              },
+            })}
             className="h-full w-full"
           />
         </div>
-
         {/* 호출 폼 섹션 - 높이를 픽셀 단위로 제어 */}
         <div
           ref={containerRef}

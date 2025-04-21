@@ -2,6 +2,7 @@ import React from "react";
 import { useFlow } from "../stackflow";
 import { ActivityComponentProps } from "../types/activities";
 import { AppScreen } from "@stackflow/plugin-basic-ui";
+import Button from "../components/common/Button";
 
 export const HomeActivity: React.FC<ActivityComponentProps> = () => {
   const { push } = useFlow();
@@ -16,7 +17,7 @@ export const HomeActivity: React.FC<ActivityComponentProps> = () => {
 
   return (
     <AppScreen>
-      <div className="flex flex-col h-full justify-center items-center bg-gradient-to-b from-blue-50 to-white px-6">
+      <div className="flex flex-col h-full justify-center items-center  px-6">
         {/* 로고 및 앱 소개 */}
         <div className="mb-12 text-center">
           <div className="flex items-center justify-center mb-4">
@@ -40,19 +41,18 @@ export const HomeActivity: React.FC<ActivityComponentProps> = () => {
 
         {/* 역할 선택 버튼 */}
         <div className="w-full max-w-md space-y-4">
-          <button
-            onClick={handlePassengerStart}
-            className="w-full py-4 px-6 text-white font-medium bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-          >
+          <Button fullWidth size="lg" onClick={handlePassengerStart}>
             승객으로 시작하기
-          </button>
+          </Button>
 
-          <button
+          <Button
+            fullWidth
+            size="lg"
+            variant="outline"
             onClick={handleDriverStart}
-            className="w-full py-4 px-6 text-blue-500 font-medium bg-white border border-blue-500 rounded-lg shadow-sm hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
           >
             기사님으로 시작하기
-          </button>
+          </Button>
         </div>
 
         {/* 하단 소개 */}

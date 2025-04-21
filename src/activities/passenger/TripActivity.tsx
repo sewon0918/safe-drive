@@ -1,19 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useFlow } from "../stackflow";
-import Map from "../components/common/Map";
+import React, { useEffect, useState } from "react";
+import { useFlow } from "../../stackflow";
+import Map from "../../components/common/Map";
 import {
   ActivityComponentProps,
   WaitingDriverParams,
-} from "../types/activities";
+} from "../../types/activities";
 import { AppScreen } from "@stackflow/plugin-basic-ui";
-import { useMatchingStore } from "../store/matchingStore";
+import { useMatchingStore } from "../../store/matchingStore";
 import {
   MatchingComponent,
   MatchedPendingComponent,
   WaitingComponent,
   OngoingComponent,
 } from "./trip/components";
-import useRouteAnimation from "../hooks/useRouteAnimation";
+import useRouteAnimation from "../../hooks/useRouteAnimation";
 
 // 여행 상태 타입 정의
 type TripStatus = "matching" | "matchedPending" | "waiting" | "ongoing";
@@ -23,10 +23,6 @@ export const TripActivity: React.FC<
   ActivityComponentProps<WaitingDriverParams>
 > = ({ params }) => {
   const { push, pop } = useFlow();
-
-  const animationRef = useRef<number | null>(null);
-  const animationStartTimeRef = useRef<number | null>(null);
-  const animationDuration = 5000; // 5초 동안 이동
 
   // 여행 상태 관리 (매칭 중 → 매칭됨(확인전) → 대기 중 → 운행 중)
   const [tripStatus, setTripStatus] = useState<TripStatus>("matching");
@@ -103,14 +99,6 @@ export const TripActivity: React.FC<
 
         // 매칭됨(확인전) 상태로 변경
         setTripStatus("matchedPending");
-
-        push("DriverInfo", {
-          driverId: mockDriver.id,
-          driverName: mockDriver.name,
-          driverRating: mockDriver.rating,
-          driverGender: mockDriver.gender,
-          estimatedArrival: mockDriver.estimatedArrival,
-        });
       }, 3000);
 
       return () => clearTimeout(matchTimer);
@@ -213,60 +201,6 @@ export const TripActivity: React.FC<
       ? `${Math.round(distance * 1000)}m`
       : `${distance.toFixed(1)}km`;
 
-  // 별점 렌더링 함수
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    // 꽉 찬 별
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <svg
-          key={`star-${i}`}
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4 text-yellow-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      );
-    }
-
-    // 반쪽 별
-    if (hasHalfStar) {
-      stars.push(
-        <svg
-          key="star-half"
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4 text-yellow-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      );
-    }
-
-    // 빈 별
-    for (let i = 0; i < 5 - fullStars - (hasHalfStar ? 1 : 0); i++) {
-      stars.push(
-        <svg
-          key={`star-empty-${i}`}
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4 text-gray-300"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      );
-    }
-
-    return stars;
-  };
-
   // 긴급 상황 신고 처리
   const handleEmergencyReport = () => {
     alert("긴급 상황 신고가 접수되었습니다. 빠른 조치를 취하겠습니다.");
@@ -303,12 +237,10 @@ export const TripActivity: React.FC<
     {
       position: originCoords,
       title: "출발지",
-      icon: "origin",
     },
     {
       position: destinationCoords,
       title: "목적지",
-      icon: "destination",
     },
     // 기사 위치 마커 (대기 중이거나 운행 중일 때만 표시)
     ...(driverPosition && (tripStatus === "waiting" || tripStatus === "ongoing")
@@ -316,14 +248,13 @@ export const TripActivity: React.FC<
           {
             position: driverPosition,
             title: `${matchedDriver?.name || ""} 기사님`,
-            icon: "driver",
           },
         ]
       : []),
   ];
 
   return (
-    <AppScreen appBar={{ title: "운행 정보" }}>
+    <AppScreen appBar={{ title: getTripStatusTitle() }}>
       <div className="flex flex-col h-full bg-gray-100">
         {/* 지도 영역 */}
         <div className="h-3/5 relative">
@@ -360,7 +291,6 @@ export const TripActivity: React.FC<
             <WaitingComponent
               driver={matchedDriver}
               onViewDriverDetails={handleViewDriverDetails}
-              renderStars={renderStars}
               // 카운트다운 제거하고 도착 상태 메시지 표시
               arrivalMessage="기사님이 출발지로 이동 중입니다..."
             />
@@ -372,7 +302,6 @@ export const TripActivity: React.FC<
               distance={formattedDistance}
               duration={duration}
               estimatedFare="₩15,000"
-              renderStars={renderStars}
               onEmergencyReport={handleEmergencyReport}
               originCoords={originCoords}
               destinationCoords={destinationCoords}

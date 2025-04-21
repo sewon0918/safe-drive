@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useTripStore } from "../../store/tripStore";
-import { useFlow } from "../../stackflow";
-import Button from "../common/Button";
+import { useTripStore } from "../../../../store/tripStore";
+import { useFlow } from "../../../../stackflow";
+import Button from "../../../../components/common/Button";
 
 interface CallFormProps {
   onSubmit: () => void;
@@ -39,7 +39,7 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
         <div className="mb-2 flex flex-col">
           <div className="flex items-center py-3 border-b border-gray-200">
             <div className="font-bold text-black text-lg">출발</div>
-            <div className="ml-4 text-black">현위치: 신동아아파트 16동</div>
+            <div className="ml-4 text-black">현위치</div>
             <button className="ml-auto text-gray-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -137,8 +137,8 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
         </div>
 
         {/* 부가 옵션 영역 */}
-        <div className="mt-3 mb-3">
-          <div className="flex items-center justify-between mb-3">
+        <div className="mt-3 mb-3 text-left">
+          <div className="flex items-center justify-between mb-3 ">
             <div>
               <h3 className="font-medium text-gray-800">여성 기사님만 매칭</h3>
               <p className="text-xs text-gray-500">
@@ -159,9 +159,7 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-gray-800">보호 모드 활성화</h3>
-              <p className="text-xs text-gray-500">
-                위치 추적 및 음성 녹음 자동 진행
-              </p>
+              <p className="text-xs text-gray-500">위치 공유 활성화</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -178,28 +176,6 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
 
       {/* 하단 고정 영역 - 마진 조정 */}
       <div className="py-4 bg-white mt-auto mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <span className="text-gray-600 text-sm">결제수단 선택</span>
-            <span className="ml-2 text-sm text-gray-600">카드</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-sm text-gray-600">포인트 0P</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 ml-1 text-gray-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-        </div>
-
         <div className="mt-8">
           <Button
             type="submit"

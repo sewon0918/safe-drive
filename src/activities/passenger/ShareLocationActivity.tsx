@@ -1,9 +1,9 @@
 import React from "react";
-import { useFlow } from "../stackflow";
+import { useFlow } from "../../stackflow";
 import { AppScreen } from "@stackflow/plugin-basic-ui";
-import Map from "../components/common/Map";
-import Button from "../components/common/Button";
-import { ActivityComponentProps } from "../types/activities";
+import Map from "../../components/common/Map";
+import Button from "../../components/common/Button";
+import { ActivityComponentProps } from "../../types/activities";
 
 // URL 파라미터 타입 정의
 interface ShareLocationParams {
