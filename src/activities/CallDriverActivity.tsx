@@ -21,7 +21,7 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
     timeout: 10000, // 타임아웃 증가
     maximumAge: 30000, // 캐시된 위치 정보 허용 시간 증가
   });
-  console.log("coordinates", coordinates);
+
   // 드래그 관련 상태
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
@@ -50,6 +50,7 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
       destination: destination || "목적지 미설정",
       destinationLat: validDestCoords.lat,
       destinationLng: validDestCoords.lng,
+      origin: "출발지",
       originLat: validOriginCoords.lat,
       originLng: validOriginCoords.lng,
       femaleDriverOnly: femaleDriverOnly,
@@ -162,7 +163,17 @@ export const CallDriverActivity: React.FC<ActivityComponentProps> = () => {
           className="relative transition-all duration-300 ease-in-out"
         >
           {/* 항상 Map 컴포넌트 렌더링 (isLoading 조건 제거) */}
-          <Map initialCenter={coordinates} zoom={3} className="h-full w-full" />
+          <Map
+            initialCenter={coordinates}
+            zoom={3}
+            markers={[
+              {
+                position: coordinates,
+                title: "현위치",
+              },
+            ]}
+            className="h-full w-full"
+          />
         </div>
 
         {/* 호출 폼 섹션 - 높이를 픽셀 단위로 제어 */}

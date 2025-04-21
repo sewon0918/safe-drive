@@ -10,6 +10,7 @@ export interface WaitingDriverParams {
   destination: string;
   destinationLat: number;
   destinationLng: number;
+  origin: string;
   originLat: number;
   originLng: number;
   femaleDriverOnly: boolean;
@@ -39,4 +40,16 @@ export interface DriverInfoParams {
   driverRating: number;
   driverGender: "male" | "female";
   estimatedArrival: string;
+}
+
+export interface TripCompletedParams {
+  driverId: string;
+  driverName: string;
+  driverGender: "male" | "female";
+  driverRating: number;
+  tripDistance: string;
+  tripDuration: number;
+  tripFare: string;
+  pickup: string;
+  dropoff: string;
 }

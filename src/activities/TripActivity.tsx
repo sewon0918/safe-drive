@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useFlow } from "../stackflow";
 import Map from "../components/common/Map";
 import {
@@ -13,6 +13,7 @@ import {
   WaitingComponent,
   OngoingComponent,
 } from "./trip/components";
+import useRouteAnimation from "../hooks/useRouteAnimation";
 
 // 여행 상태 타입 정의
 type TripStatus = "matching" | "matchedPending" | "waiting" | "ongoing";
@@ -22,9 +23,10 @@ export const TripActivity: React.FC<
   ActivityComponentProps<WaitingDriverParams>
 > = ({ params }) => {
   const { push, pop } = useFlow();
-  const [startTripCountdown, setStartTripCountdown] = useState<number | null>(
-    null
-  );
+
+  const animationRef = useRef<number | null>(null);
+  const animationStartTimeRef = useRef<number | null>(null);
+  const animationDuration = 5000; // 5초 동안 이동
 
   // 여행 상태 관리 (매칭 중 → 매칭됨(확인전) → 대기 중 → 운행 중)
   const [tripStatus, setTripStatus] = useState<TripStatus>("matching");
@@ -52,6 +54,35 @@ export const TripActivity: React.FC<
         : 127.0396,
   };
 
+  // 기사 초기 위치 계산 (출발지에서 약간 떨어진 위치)
+  const calculateInitialDriverPosition = () => {
+    // 출발지로부터 약 500m 떨어진 위치 계산 (대략적인 계산)
+    const offset = 0.005; // 약 500m에 해당하는 위도/경도 오프셋
+    return {
+      lat: originCoords.lat - offset,
+      lng: originCoords.lng - offset * 1.2, // 약간 대각선 방향으로
+    };
+  };
+  // 기존 startTripCountdown 삭제하고 기사 위치 상태로 대체
+  const [initialDriverPosition] = useState<{
+    lat: number;
+    lng: number;
+  }>(calculateInitialDriverPosition());
+
+  // 대신 커스텀 훅을 사용해 애니메이션 구현
+  const {
+    currentPosition: driverPosition,
+    startAnimation: startDriverAnimation,
+  } = useRouteAnimation({
+    startCoords: initialDriverPosition,
+    endCoords: originCoords,
+    durationInSeconds: 5, // 10초 동안 애니메이션
+    onComplete: () => {
+      // 애니메이션 완료 시(기사님 도착 시) 운행 중 상태로 변경
+      setTripStatus("ongoing");
+    },
+  });
+
   // 대기 시간 계산을 위한 타이머 & 3초 후 기사 매칭
   useEffect(() => {
     // 매칭되지 않았고, 매칭된 기사가 없을 때만 매칭 진행
@@ -72,6 +103,7 @@ export const TripActivity: React.FC<
 
         // 매칭됨(확인전) 상태로 변경
         setTripStatus("matchedPending");
+
         push("DriverInfo", {
           driverId: mockDriver.id,
           driverName: mockDriver.name,
@@ -81,43 +113,44 @@ export const TripActivity: React.FC<
         });
       }, 3000);
 
-      return () => {
-        clearTimeout(matchTimer);
-      };
+      return () => clearTimeout(matchTimer);
     }
-  }, [isMatched, matchedDriver, tripStatus, setMatchedDriver]);
+  }, [isMatched, matchedDriver, tripStatus, setMatchedDriver, push]);
 
-  // 매칭 수락 상태 변경 감지 및 카운트다운 시작
+  // 매칭 완료 시 대기 상태로 변경 및 기사 위치 애니메이션 시작
   useEffect(() => {
-    if (
-      isMatchingCompleted &&
-      tripStatus !== "waiting" &&
-      tripStatus !== "ongoing"
-    ) {
-      // 매칭 완료 - 대기 상태로 전환
+    if (isMatchingCompleted && tripStatus === "matchedPending") {
+      // 대기 상태로 변경
       setTripStatus("waiting");
-      // 5초 후 운행 시작 카운트다운 시작
-      setStartTripCountdown(5);
-    }
-  }, [isMatchingCompleted, tripStatus]);
 
-  // 카운트다운 처리
+      // 즉시 실행하지 않고 상태 업데이트가 완료된 후에 실행
+      const timer = setTimeout(() => {
+        startDriverAnimation();
+      }, 0);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isMatchingCompleted, tripStatus]); // startDriverAnimation 의존성 제거
+
+  // 운행 완료 타이머 관리를 위한 상태
   useEffect(() => {
-    if (startTripCountdown === null) return;
-
-    if (startTripCountdown <= 0) {
-      // 카운트다운 종료 - 운행 상태로 전환
-      setTripStatus("ongoing");
-      return;
+    if (tripStatus === "ongoing") {
+      setTimeout(() => {
+        // 운행 완료 화면으로 이동
+        push("TripCompleted", {
+          driverId: matchedDriver?.id || "",
+          driverName: matchedDriver?.name || "",
+          driverGender: matchedDriver?.gender || "male",
+          driverRating: matchedDriver?.rating || 4.5,
+          tripDistance: formattedDistance,
+          tripDuration: duration,
+          tripFare: "₩15,000",
+          pickup: params.origin || "출발지",
+          dropoff: params.destination || "목적지",
+        });
+      }, 10000); // 10초 후 실행
     }
-
-    // 1초마다 카운트다운 감소
-    const timer = setTimeout(() => {
-      setStartTripCountdown((prev) => (prev ?? 0) - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [startTripCountdown]);
+  }, [tripStatus]);
 
   // 기사님 정보 상세 보기
   const handleViewDriverDetails = () => {
@@ -234,12 +267,6 @@ export const TripActivity: React.FC<
     return stars;
   };
 
-  // 비상 연락처 처리
-  const handleEmergencyContact = () => {
-    alert("비상 연락처로 연결합니다.");
-    // 실제 구현에서는 연락처 목록이나 직접 통화 기능 추가
-  };
-
   // 긴급 상황 신고 처리
   const handleEmergencyReport = () => {
     alert("긴급 상황 신고가 접수되었습니다. 빠른 조치를 취하겠습니다.");
@@ -252,7 +279,7 @@ export const TripActivity: React.FC<
       case "matching":
         return "기사님 매칭 중";
       case "matchedPending":
-        return "기사님 매칭 완료";
+        return "기사님 매칭 대기 중";
       case "waiting":
         return "기사님 도착 대기 중";
       case "ongoing":
@@ -262,47 +289,58 @@ export const TripActivity: React.FC<
     }
   };
 
+  useEffect(() => {
+    // 매칭 상태가 변경될 때 tripStatus 업데이트
+    if (!isMatched || !matchedDriver) {
+      setTripStatus("matching");
+    } else if (isMatched && matchedDriver && !matchedDriver.accepted) {
+      setTripStatus("matchedPending");
+    }
+  }, [isMatched, matchedDriver]);
+
+  // 지도에 표시할 마커들 계산
+  const mapMarkers = [
+    {
+      position: originCoords,
+      title: "출발지",
+      icon: "origin",
+    },
+    {
+      position: destinationCoords,
+      title: "목적지",
+      icon: "destination",
+    },
+    // 기사 위치 마커 (대기 중이거나 운행 중일 때만 표시)
+    ...(driverPosition && (tripStatus === "waiting" || tripStatus === "ongoing")
+      ? [
+          {
+            position: driverPosition,
+            title: `${matchedDriver?.name || ""} 기사님`,
+            icon: "driver",
+          },
+        ]
+      : []),
+  ];
+
   return (
-    <AppScreen appBar={{ title: getTripStatusTitle() }}>
-      <div className="flex flex-col h-full">
+    <AppScreen appBar={{ title: "운행 정보" }}>
+      <div className="flex flex-col h-full bg-gray-100">
         {/* 지도 영역 */}
-        <div className="relative h-3/5">
+        <div className="h-3/5 relative">
           <Map
             initialCenter={originCoords}
-            markers={[
-              {
-                position: originCoords,
-                title: "출발지",
-                icon: "origin",
-              },
-              {
-                position: destinationCoords,
-                title: "목적지",
-                icon: "destination",
-              },
-              ...(matchedDriver && tripStatus !== "matching"
-                ? [
-                    {
-                      position: {
-                        lat: destinationCoords.lat - 0.003,
-                        lng: destinationCoords.lng - 0.002,
-                      },
-                      title: `${matchedDriver.name} 기사님`,
-                      icon: "driver",
-                    },
-                  ]
-                : []),
-            ]}
+            markers={mapMarkers}
             zoom={3}
             path={{
               origin: originCoords,
               destination: destinationCoords,
             }}
+            key="trip-map"
           />
         </div>
 
         {/* 상태별 정보 영역 */}
-        <div className="h-2/5 bg-white rounded-t-3xl shadow-lg px-4 py-6">
+        <div className="h-2/5 bg-white rounded-t-3xl shadow-lg overflow-hidden p-4">
           {tripStatus === "matching" && (
             <MatchingComponent
               destination={params.destination}
@@ -321,9 +359,10 @@ export const TripActivity: React.FC<
           {tripStatus === "waiting" && matchedDriver && (
             <WaitingComponent
               driver={matchedDriver}
-              countdown={startTripCountdown}
               onViewDriverDetails={handleViewDriverDetails}
               renderStars={renderStars}
+              // 카운트다운 제거하고 도착 상태 메시지 표시
+              arrivalMessage="기사님이 출발지로 이동 중입니다..."
             />
           )}
 
@@ -334,8 +373,9 @@ export const TripActivity: React.FC<
               duration={duration}
               estimatedFare="₩15,000"
               renderStars={renderStars}
-              onEmergencyContact={handleEmergencyContact}
               onEmergencyReport={handleEmergencyReport}
+              originCoords={originCoords}
+              destinationCoords={destinationCoords}
             />
           )}
         </div>

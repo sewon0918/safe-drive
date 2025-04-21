@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-interface MatchedDriver {
+// 기사 정보 인터페이스
+export interface DriverInfo {
   id: string;
   name: string;
   gender: "male" | "female";
@@ -9,41 +10,21 @@ interface MatchedDriver {
   accepted: boolean;
 }
 
+// 매칭 스토어 상태 인터페이스
 interface MatchingState {
   isMatched: boolean;
-  matchedDriver: MatchedDriver | null;
-  setMatchedDriver: (driver: MatchedDriver) => void;
-  acceptDriver: () => void;
-  rejectDriver: () => void;
-  resetMatch: () => void;
+  matchedDriver: DriverInfo | null;
+  setIsMatched: (isMatched: boolean) => void;
+  setMatchedDriver: (driver: DriverInfo | null) => void;
+  resetMatching: () => void; // 매칭 초기화 함수 추가
 }
 
+// 매칭 스토어 생성
 export const useMatchingStore = create<MatchingState>((set) => ({
   isMatched: false,
   matchedDriver: null,
-
+  setIsMatched: (isMatched) => set({ isMatched }),
   setMatchedDriver: (driver) =>
-    set({
-      isMatched: true,
-      matchedDriver: { ...driver, accepted: false },
-    }),
-
-  acceptDriver: () =>
-    set((state) => ({
-      matchedDriver: state.matchedDriver
-        ? { ...state.matchedDriver, accepted: true }
-        : null,
-    })),
-
-  rejectDriver: () =>
-    set({
-      isMatched: false,
-      matchedDriver: null,
-    }),
-
-  resetMatch: () =>
-    set({
-      isMatched: false,
-      matchedDriver: null,
-    }),
+    set({ matchedDriver: driver, isMatched: !!driver }),
+  resetMatching: () => set({ isMatched: false, matchedDriver: null }), // 매칭 상태 초기화
 }));

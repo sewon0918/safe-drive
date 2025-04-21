@@ -29,7 +29,7 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
     standard: "2만원",
   };
 
-  const isFormValid = true; // Implement form validation logic
+  const isFormValid = !!destination; // Implement form validation logic
 
   return (
     <div className="w-full flex flex-col h-full px-4 ">
@@ -61,12 +61,12 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
             <div className="font-bold text-black text-lg">도착</div>
             <div className="flex-1 ml-4">
               <div
-                className="w-full text-gray-700 cursor-pointer"
+                className="w-full text-gray-700 cursor-pointer text-left"
                 onClick={() =>
                   push("SearchAddress", { searchType: "destination" })
                 }
               >
-                {destination ? destination : "집: 신동아아파트 16동"}
+                {destination ? destination : "목적지 입력"}
               </div>
             </div>
           </div>

@@ -54,7 +54,6 @@ export const SearchAddressActivity: React.FC<
     setIsProcessing(true);
     let fullAddress = data.address;
     let extraAddress = "";
-    console.log(data);
 
     if (data.addressType === "R") {
       if (data.bname !== "") {
@@ -74,10 +73,13 @@ export const SearchAddressActivity: React.FC<
       // 주소에서 정확한 좌표 얻기
       const coords = await getCoordinates(fullAddress);
 
-      // 상태 업데이트 및 이전 화면으로 돌아가기
+      // 상태 업데이트
       setDestination(fullAddress);
       setDestinationCoords(coords);
+
+      // URL 직접 변경 후 pop 호출
       pop();
+      window.history.pushState({}, "", "/");
     } catch (error) {
       console.error("좌표 변환 중 오류 발생:", error);
       setIsProcessing(false);

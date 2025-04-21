@@ -25,12 +25,12 @@ export const useTripStore = create<TripState>((set) => ({
   setDestinationCoords: (coords) => set({ destinationCoords: coords }),
 
   // 여성 기사 전용 매칭 옵션
-  femaleDriverOnly: false,
+  femaleDriverOnly: true,
   toggleFemaleDriverOnly: () =>
     set((state) => ({ femaleDriverOnly: !state.femaleDriverOnly })),
 
   // 보호 모드 옵션
-  protectionMode: false,
+  protectionMode: true,
   toggleProtectionMode: () =>
     set((state) => ({ protectionMode: !state.protectionMode })),
 

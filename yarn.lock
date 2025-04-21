@@ -596,6 +596,15 @@
     "@vanilla-extract/private" "^1.0.5"
     "@vanilla-extract/recipes" "^0.5.3"
 
+"@stackflow/plugin-history-sync@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@stackflow/plugin-history-sync/-/plugin-history-sync-1.7.1.tgz#8d78c51f07db62dd4356368332e13a7f79ab59b5"
+  integrity sha512-qgmqil2We1Hjcg6pu5jvrOUAi98hbdQF2/d3KGnOurCUc8PYxl8o0JKbyTkoOMBRDeBOVgtQBwpHEYB3t3jwvQ==
+  dependencies:
+    flatted "^3.3.1"
+    history "^5.3.0"
+    url-pattern "^1.0.3"
+
 "@stackflow/plugin-renderer-basic@^1.1.13":
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/@stackflow/plugin-renderer-basic/-/plugin-renderer-basic-1.1.13.tgz#435258900a2464d048c3fe302a5da398bf956fb1"
@@ -1297,7 +1306,7 @@ flat-cache@^4.0.0:
     flatted "^3.2.9"
     keyv "^4.5.4"
 
-flatted@^3.2.9:
+flatted@^3.2.9, flatted@^3.3.1:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==

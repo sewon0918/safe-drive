@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../../../components/common/Button";
+import DriverProfileCard from "../../../components/common/DriverProfileCard";
 
 interface DriverInfo {
   id: string;
@@ -11,92 +11,51 @@ interface DriverInfo {
 
 interface WaitingComponentProps {
   driver: DriverInfo;
-  countdown: number | null;
   onViewDriverDetails: () => void;
   renderStars: (rating: number) => React.ReactElement[];
+  arrivalMessage?: string;
 }
 
-const WaitingComponent: React.FC<WaitingComponentProps> = ({
+export const WaitingComponent: React.FC<WaitingComponentProps> = ({
   driver,
-  countdown,
   onViewDriverDetails,
   renderStars,
+  arrivalMessage = "기사님이 곧 도착합니다...",
 }) => {
+  // 기사 정보에 추가할 정보
+  const additionalInfo = (
+    <p className="text-sm text-gray-600">
+      <span className="font-semibold">예상 도착 시간:</span>{" "}
+      {driver.estimatedArrival}
+    </p>
+  );
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="bg-blue-500 -mx-4 -mt-6 p-4 mb-4 text-center text-white">
-        <h2 className="font-bold text-xl">기사님과 매칭되었습니다</h2>
-        <p className="text-sm text-blue-100">
-          {countdown !== null
-            ? `${countdown}초 후 운행이 시작됩니다`
-            : `도착 예정: ${driver.estimatedArrival}`}
-        </p>
+    <div className="h-full flex flex-col">
+      <div className="text-center mb-4">
+        <h2 className="text-xl font-bold">기사님을 기다리는 중</h2>
+        <p className="text-gray-500 mt-1">{arrivalMessage}</p>
       </div>
 
-      {/* 기사님 정보 - 기본 */}
-      <div className="flex items-center mb-4">
-        <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
-          <img
-            src={
-              driver.gender === "female"
-                ? "/assets/female-driver.png"
-                : "/assets/male-driver.png"
-            }
-            alt={driver.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src =
-                "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJmZWF0aGVyIGZlYXRoZXItdXNlciI+PHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRINGA0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSIxMiIgY3k9IjciIHI9IjQiPjwvY2lyY2xlPjwvc3ZnPg==";
-            }}
-          />
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center">
-            <h3 className="font-bold text-lg">{driver.name}</h3>
-            <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-              {driver.gender === "female" ? "여성" : "남성"}
-            </span>
-          </div>
-          <div className="flex items-center mt-1">
-            {renderStars(driver.rating)}
-            <span className="ml-1 text-sm text-gray-600">
-              {driver.rating.toFixed(1)}
-            </span>
-            <Button
-              className="ml-2 text-xs text-blue-500 underline"
-              onClick={onViewDriverDetails}
-              variant="text"
-            >
-              상세 정보
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* 기사 프로필 카드 - 상세 보기 버튼 포함 */}
+      <DriverProfileCard
+        name={driver.name}
+        gender={driver.gender}
+        rating={driver.rating}
+        renderStars={renderStars}
+        additionalInfo={additionalInfo}
+        showDetailsButton={true}
+        onViewDetails={onViewDriverDetails}
+      />
 
-      {/* 기사님 정보 - 추가 정보 */}
-      <div className="bg-gray-50 p-3 rounded-lg mb-4">
-        <div className="flex justify-between mb-2">
-          <span className="text-sm text-gray-600">이동 수단</span>
-          <span className="text-sm font-medium">전동 킥보드</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-sm text-gray-600">현재 위치</span>
-          <span className="text-sm font-medium">약 1.2km 떨어짐</span>
-        </div>
-      </div>
-
-      {/* 하단 안내 영역 */}
-      <div className="mt-auto">
-        <div className="p-4 bg-gray-50 rounded-lg text-center">
-          <p className="text-gray-700">
-            기사님이 도착하면 자동으로 운행이 시작됩니다
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            {countdown === null
-              ? "잠시만 기다려 주세요"
-              : `${countdown}초 후 시작됩니다`}
-          </p>
-        </div>
+      {/* 안내 메시지 */}
+      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+        <h3 className="text-blue-800 font-medium mb-1">이용 안내</h3>
+        <ul className="text-sm text-blue-700 space-y-1">
+          <li>• 기사님이 곧 도착합니다. 탑승 준비를 해주세요.</li>
+          <li>• 위치를 확인하고 안전한 곳에서 기다려주세요.</li>
+          <li>• 승차 후 문제가 있으면 '긴급 신고' 기능을 이용해주세요.</li>
+        </ul>
       </div>
     </div>
   );
