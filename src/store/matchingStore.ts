@@ -8,6 +8,7 @@ export interface DriverInfo {
   rating: number;
   estimatedArrival: string;
   accepted: boolean;
+  femaleRating?: number;
 }
 
 // 매칭 스토어 상태 인터페이스

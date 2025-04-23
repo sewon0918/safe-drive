@@ -10,6 +10,7 @@ interface TripState {
   setDestinationCoords: (coords: { lat: number; lng: number }) => void;
   femaleDriverOnly: boolean;
   toggleFemaleDriverOnly: () => void;
+  setFemaleDriverOnly: (femaleDriverOnly: boolean) => void;
   protectionMode: boolean;
   toggleProtectionMode: () => void;
   isLoading: boolean;
@@ -34,6 +35,9 @@ export const useTripStore = create<TripState>((set) => ({
   femaleDriverOnly: true,
   toggleFemaleDriverOnly: () =>
     set((state) => ({ femaleDriverOnly: !state.femaleDriverOnly })),
+
+  setFemaleDriverOnly: (femaleDriverOnly: boolean) =>
+    set((state) => ({ femaleDriverOnly: femaleDriverOnly })),
 
   // 보호 모드 옵션
   protectionMode: true,

@@ -13,6 +13,7 @@ interface DriverInfoParams {
   driverRating: number;
   driverGender: "male" | "female";
   estimatedArrival: string;
+  femaleRating?: number;
 }
 
 // 리뷰 데이터 (실제로는 API에서 가져와야 함)
@@ -82,6 +83,7 @@ export const DriverInfoActivity: React.FC<
             name={params.driverName}
             gender={params.driverGender}
             rating={params.driverRating}
+            femaleRating={params.femaleRating}
             additionalInfo={additionalInfo}
             imageSize="lg"
           />

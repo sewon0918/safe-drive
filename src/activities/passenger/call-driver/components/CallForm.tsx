@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTripStore } from "../../../../store/tripStore";
 import { useFlow } from "../../../../stackflow";
 import Button from "../../../../components/common/Button";
+import ServiceOptionCard from "./ServiceOptionCard";
 
 interface CallFormProps {
   onSubmit: () => void;
   isLoading?: boolean;
 }
+export interface ServiceOption {
+  id: string;
+  label: string;
+  name: string;
+  description: string;
+  price: string;
+  onClick: () => void;
+}
 
 const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
   const {
     destination,
-    femaleDriverOnly,
-    toggleFemaleDriverOnly,
+    setFemaleDriverOnly,
     protectionMode,
     toggleProtectionMode,
   } = useTripStore();
@@ -28,6 +36,29 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
     best: "2.4만원",
     standard: "2만원",
   };
+
+  const serviceOptions: ServiceOption[] = [
+    {
+      id: "vip",
+      label: "VIP",
+      name: "VIP 서비스",
+      description: "여성 기사님과 함께하는 안전한 운행",
+      price: prices.vip,
+      onClick: () => setSelectedOption("vip"),
+    },
+    {
+      id: "standard",
+      label: "착한",
+      name: "착한요금",
+      description: "합리적인 가격의 안전 운행",
+      price: prices.standard,
+      onClick: () => setSelectedOption("standard"),
+    },
+  ];
+
+  useEffect(() => {
+    setFemaleDriverOnly(selectedOption === "vip");
+  }, [selectedOption]);
 
   const isFormValid = !!destination; // Implement form validation logic
 
@@ -74,88 +105,16 @@ const CallForm: React.FC<CallFormProps> = ({ onSubmit, isLoading = false }) => {
 
         {/* 서비스 옵션 */}
         <div className="bg-gray-50 rounded-xl p-1">
-          <div
-            className={`p-4 rounded-xl flex items-center mb-2 ${
-              selectedOption === "vip"
-                ? "bg-blue-50 border border-blue-100"
-                : "bg-white"
-            }`}
-            onClick={() => setSelectedOption("vip")}
-          >
-            <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center mr-3">
-              <span className="text-white text-xs">VIP</span>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-gray-800">VIP 서비스</h3>
-              <p className="text-xs text-gray-500">
-                최상급 서비스와 안전한 운행
-              </p>
-            </div>
-            <div className="text-lg font-bold">{prices.vip}</div>
-          </div>
-
-          <div
-            className={`p-4 rounded-xl flex items-center mb-2 ${
-              selectedOption === "best"
-                ? "bg-blue-50 border border-blue-100"
-                : "bg-white"
-            }`}
-            onClick={() => setSelectedOption("best")}
-          >
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-3 relative">
-              <span className="text-white text-xs">빠른</span>
-              <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] px-1 rounded">
-                BEST
-              </div>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-gray-800">빠른배정</h3>
-              <p className="text-xs text-gray-500">
-                가장 빠르게 배정해드립니다
-              </p>
-            </div>
-            <div className="text-lg font-bold">{prices.best}</div>
-          </div>
-
-          <div
-            className={`p-4 rounded-xl flex items-center ${
-              selectedOption === "standard"
-                ? "bg-blue-50 border border-blue-100"
-                : "bg-white"
-            }`}
-            onClick={() => setSelectedOption("standard")}
-          >
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3">
-              <span className="text-white text-xs">착한</span>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-blue-500">착한요금</h3>
-              <p className="text-xs text-gray-500">합리적인 가격의 안전 운행</p>
-            </div>
-            <div className="text-lg font-bold">{prices.standard}</div>
-          </div>
+          {serviceOptions.map((each) => (
+            <ServiceOptionCard
+              {...each}
+              selected={selectedOption === each.id}
+            />
+          ))}
         </div>
 
         {/* 부가 옵션 영역 */}
         <div className="mt-3 mb-3 text-left">
-          <div className="flex items-center justify-between mb-3 ">
-            <div>
-              <h3 className="font-medium text-gray-800">여성 기사님만 매칭</h3>
-              <p className="text-xs text-gray-500">
-                안전한 귀가를 위한 여성 기사님 전용 매칭
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={femaleDriverOnly}
-                onChange={toggleFemaleDriverOnly}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-            </label>
-          </div>
-
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-gray-800">보호 모드 활성화</h3>

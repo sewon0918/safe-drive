@@ -5,6 +5,7 @@ interface DriverProfileCardProps {
   name: string;
   gender: "male" | "female";
   rating: number;
+  femaleRating?: number;
   additionalInfo?: React.ReactNode;
   imageSize?: "sm" | "md" | "lg";
   showDetailsButton?: boolean;
@@ -18,6 +19,7 @@ const DriverProfileCard: React.FC<DriverProfileCardProps> = ({
   name,
   gender,
   rating,
+  femaleRating,
   additionalInfo,
   imageSize = "md",
   showDetailsButton = false,
@@ -73,6 +75,11 @@ const DriverProfileCard: React.FC<DriverProfileCardProps> = ({
           <div className="flex items-center mt-1">
             <StarsDisplay rating={rating} showText={true} />
           </div>
+          {femaleRating && (
+            <div className="flex items-center mt-1">
+              <StarsDisplay rating={femaleRating} showText={true} />
+            </div>
+          )}
           {additionalInfo && (
             <div className="mt-1 text-sm text-gray-600">{additionalInfo}</div>
           )}

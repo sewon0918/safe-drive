@@ -90,6 +90,7 @@ export const TripActivity: React.FC<
           name: "김여성",
           gender: "female" as "male" | "female",
           rating: 4.8,
+          femaleRating: 4.5,
           estimatedArrival: "5분 후",
           accepted: false, // 초기에는 accepted가 false
         };
@@ -149,6 +150,7 @@ export const TripActivity: React.FC<
         driverRating: matchedDriver.rating,
         driverGender: matchedDriver.gender,
         estimatedArrival: matchedDriver.estimatedArrival,
+        femaleRating: matchedDriver.femaleRating,
       });
     }
   };
@@ -271,7 +273,7 @@ export const TripActivity: React.FC<
         </div>
 
         {/* 상태별 정보 영역 */}
-        <div className="h-2/5 bg-white rounded-t-3xl shadow-lg overflow-hidden p-4">
+        <div className="h-2/5 bg-white rounded-t-3xl shadow-lg overflow-auto p-4">
           {tripStatus === "matching" && (
             <MatchingComponent
               destination={params.destination}
